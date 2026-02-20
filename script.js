@@ -61,6 +61,63 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.custom-slider').forEach(updateSliderProgress);
   }
 
+  function initSearchableSelects() {
+    document.querySelectorAll('.searchable-select').forEach(select => {
+      const trigger = select.querySelector('.searchable-select-trigger');
+      const textEl = select.querySelector('.searchable-select-text');
+      const input = select.querySelector('.searchable-select-input');
+      const options = select.querySelectorAll('.searchable-select-options li');
+
+      const currentValue = select.dataset.value;
+      options.forEach(opt => {
+        if (opt.dataset.value === currentValue) opt.classList.add('selected');
+      });
+
+      trigger.addEventListener('click', () => {
+        const wasOpen = select.classList.contains('open');
+        document.querySelectorAll('.searchable-select.open').forEach(s => s.classList.remove('open'));
+        if (!wasOpen) {
+          select.classList.add('open');
+          input.value = '';
+          options.forEach(opt => opt.classList.remove('hidden'));
+          setTimeout(() => input.focus(), 50);
+        }
+      });
+
+      input.addEventListener('input', () => {
+        const query = input.value.toLowerCase();
+        options.forEach(opt => {
+          const match = opt.textContent.toLowerCase().includes(query);
+          opt.classList.toggle('hidden', !match);
+        });
+      });
+
+      input.addEventListener('click', (e) => e.stopPropagation());
+
+      options.forEach(opt => {
+        opt.addEventListener('click', () => {
+          const value = opt.dataset.value;
+          const label = opt.textContent;
+
+          select.dataset.value = value;
+          textEl.textContent = label;
+
+          options.forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+
+          select.classList.remove('open');
+          select.dispatchEvent(new CustomEvent('change', { detail: { value } }));
+        });
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.searchable-select')) {
+        document.querySelectorAll('.searchable-select.open').forEach(s => s.classList.remove('open'));
+      }
+    });
+  }
+
   // =============================================
   // CALCULATOR 1: Health Insurance Calculator
   // =============================================
@@ -123,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       citySelect.addEventListener('change', (e) => {
-        this.state.city = e.target.value;
+        this.state.city = e.detail.value;
         this.update();
       });
 
@@ -210,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       document.getElementById('c2-citySelect').addEventListener('change', (e) => {
-        this.state.city = e.target.value;
+        this.state.city = e.detail.value;
         this.update();
       });
 
@@ -453,6 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // =============================================
 
   initAllSliders();
+  initSearchableSelects();
   c1.init();
   c2.init();
   c3.init();

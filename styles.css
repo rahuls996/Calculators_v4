@@ -407,8 +407,9 @@ body {
 }
 
 .member-stepper-icon {
-  font-size: 24px;
-  line-height: 1;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
 }
 
 .member-stepper-label {
@@ -1083,7 +1084,8 @@ body {
   }
 
   .member-stepper-icon {
-    font-size: 20px;
+    width: 32px;
+    height: 32px;
   }
 
   .member-stepper-label {

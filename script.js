@@ -463,6 +463,78 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // =============================================
+  // CALCULATOR 5: HLV (Human Life Value) Calculator
+  // =============================================
+
+  const c5 = {
+    state: { age: 30, income: 10, expenses: 4, retireAge: 60 },
+
+    calculate() {
+      const yearsLeft = Math.max(this.state.retireAge - this.state.age, 1);
+      // Net annual contribution = income - expenses (what family depends on)
+      const netAnnual = Math.max(this.state.income - this.state.expenses, 0) * 100000;
+      // HLV: present value of future net contributions discounted at 6% inflation
+      // PV = netAnnual × [(1 - (1+r)^-n) / r], r = 0.06
+      const r = 0.06;
+      const pv = netAnnual * ((1 - Math.pow(1 + r, -yearsLeft)) / r);
+      const hlv = Math.round(pv / 100000) * 100000;
+
+      return {
+        hlv: Math.max(hlv, 500000),
+        yearsLeft,
+        netAnnual
+      };
+    },
+
+    formatHLV(val) {
+      if (val >= 10000000) return '₹' + (val / 10000000).toFixed(1) + 'Cr';
+      if (val >= 100000)   return '₹' + (val / 100000).toFixed(1) + 'L';
+      return '₹' + val.toLocaleString('en-IN');
+    },
+
+    update() {
+      const r = this.calculate();
+      const hlvFormatted = '₹ ' + r.hlv.toLocaleString('en-IN');
+      animateAmount(document.getElementById('c5-hlvAmount'), hlvFormatted);
+      document.getElementById('c5-yearsLeft').textContent = r.yearsLeft + ' yrs';
+      document.getElementById('c5-netContrib').textContent = this.formatHLV(Math.round(r.netAnnual / 100000) * 100000) + '/yr';
+      document.getElementById('c5-recommended').textContent = this.formatHLV(r.hlv);
+    },
+
+    init() {
+      document.getElementById('c5-ageSlider').addEventListener('input', (e) => {
+        this.state.age = parseInt(e.target.value);
+        document.getElementById('c5-ageValue').textContent = this.state.age;
+        updateSliderProgress(e.target);
+        this.update();
+      });
+
+      document.getElementById('c5-incomeSlider').addEventListener('input', (e) => {
+        this.state.income = parseInt(e.target.value);
+        document.getElementById('c5-incomeValue').textContent = formatLakhsWithRupee(this.state.income);
+        updateSliderProgress(e.target);
+        this.update();
+      });
+
+      document.getElementById('c5-expensesSlider').addEventListener('input', (e) => {
+        this.state.expenses = parseInt(e.target.value);
+        document.getElementById('c5-expensesValue').textContent = formatLakhsWithRupee(this.state.expenses);
+        updateSliderProgress(e.target);
+        this.update();
+      });
+
+      document.getElementById('c5-retireSlider').addEventListener('input', (e) => {
+        this.state.retireAge = parseInt(e.target.value);
+        document.getElementById('c5-retireValue').textContent = this.state.retireAge + ' yrs';
+        updateSliderProgress(e.target);
+        this.update();
+      });
+
+      this.update();
+    }
+  };
+
+  // =============================================
   // Global: Toggle Buttons (single-select per group per calculator)
   // =============================================
 
@@ -477,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       btn.classList.add('active');
 
-      const calcObj = { c1, c2, c3, c4 }[calc];
+      const calcObj = { c1, c2, c3, c4, c5 }[calc];
       if (calcObj) {
         calcObj.state[group] = value;
         calcObj.update();
@@ -497,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selected.push(b.dataset.value);
       });
 
-      const calcObj = { c1, c2, c3, c4 }[calc];
+      const calcObj = { c1, c2, c3, c4, c5 }[calc];
       if (calcObj) {
         calcObj.state[group] = selected;
         calcObj.update();
@@ -512,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.cta-button').forEach((btn) => {
     btn.addEventListener('click', () => {
       const calc = btn.dataset.calc;
-      const calcObj = { c1, c2, c3, c4 }[calc];
+      const calcObj = { c1, c2, c3, c4, c5 }[calc];
       if (calcObj) calcObj.update();
 
       btn.style.transform = 'scale(0.98)';
@@ -558,4 +630,5 @@ document.addEventListener('DOMContentLoaded', () => {
   c2.init();
   c3.init();
   c4.init();
+  c5.init();
 });

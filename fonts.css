@@ -1,17 +1,25 @@
-/*
-  Euclid Circular B — Font Face Declarations
-  
-  If you have the .woff2 / .woff / .ttf files, place them in a "fonts/" folder
-  and uncomment the @font-face blocks below.
-  
-  Otherwise, the font will load from the system if installed locally.
-*/
-
-/*
 @font-face {
   font-family: 'Euclid Circular B';
-  src: url('fonts/EuclidCircularB-Regular.woff2') format('woff2'),
-       url('fonts/EuclidCircularB-Regular.woff') format('woff');
+  src: url('Font/EuclidCircularB-Light.otf') format('opentype'),
+       url('Font/EuclidCircularB-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Euclid Circular B';
+  src: url('Font/EuclidCircularB-LightItalic.otf') format('opentype'),
+       url('Font/EuclidCircularB-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Euclid Circular B';
+  src: url('Font/EuclidCircularB-Regular.otf') format('opentype'),
+       url('Font/EuclidCircularB-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -19,8 +27,17 @@
 
 @font-face {
   font-family: 'Euclid Circular B';
-  src: url('fonts/EuclidCircularB-Medium.woff2') format('woff2'),
-       url('fonts/EuclidCircularB-Medium.woff') format('woff');
+  src: url('Font/EuclidCircularB-RegularItalic.otf') format('opentype'),
+       url('Font/EuclidCircularB-RegularItalic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Euclid Circular B';
+  src: url('Font/EuclidCircularB-Medium.otf') format('opentype'),
+       url('Font/EuclidCircularB-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -28,8 +45,17 @@
 
 @font-face {
   font-family: 'Euclid Circular B';
-  src: url('fonts/EuclidCircularB-Semibold.woff2') format('woff2'),
-       url('fonts/EuclidCircularB-Semibold.woff') format('woff');
+  src: url('Font/EuclidCircularB-MediumItalic.otf') format('opentype'),
+       url('Font/EuclidCircularB-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Euclid Circular B';
+  src: url('Font/EuclidCircularB-Semibold.otf') format('opentype'),
+       url('Font/EuclidCircularB-Semibold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -37,10 +63,27 @@
 
 @font-face {
   font-family: 'Euclid Circular B';
-  src: url('fonts/EuclidCircularB-Bold.woff2') format('woff2'),
-       url('fonts/EuclidCircularB-Bold.woff') format('woff');
+  src: url('Font/EuclidCircularB-SemiboldItalic.otf') format('opentype'),
+       url('Font/EuclidCircularB-SemiboldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Euclid Circular B';
+  src: url('Font/EuclidCircularB-Bold.otf') format('opentype'),
+       url('Font/EuclidCircularB-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
-*/
+
+@font-face {
+  font-family: 'Euclid Circular B';
+  src: url('Font/EuclidCircularB-BoldItalic.otf') format('opentype'),
+       url('Font/EuclidCircularB-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}

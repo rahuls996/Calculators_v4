@@ -31,6 +31,10 @@
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 4.5V9L12 10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>Term Duration</span>
         </button>
+        <button class="tab-btn" data-tab="calc5">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2.25C9 2.25 4.5 5.25 4.5 9.75C4.5 12.2625 6.5025 14.25 9 14.25C11.4975 14.25 13.5 12.2625 13.5 9.75C13.5 5.25 9 2.25 9 2.25Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 14.25V16.5M6.75 16.5H11.25" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <span>Life Value</span>
+        </button>
       </div>
     </nav>
 
@@ -158,15 +162,15 @@
             <div class="breakdown-list">
               <div class="breakdown-item">
                 <img class="breakdown-star" src="star.svg" alt="" width="20" height="20">
-                <span class="breakdown-text">Age factor <strong id="c1-ageImpact">+₹2,400</strong></span>
+                <span class="breakdown-text">Age factor <strong id="c1-ageImpact">+₹0</strong></span>
               </div>
               <div class="breakdown-item">
                 <img class="breakdown-star" src="star.svg" alt="" width="20" height="20">
-                <span class="breakdown-text">City tier adjustment <strong id="c1-cityImpact">+₹1,200</strong></span>
+                <span class="breakdown-text">City adjustment <strong id="c1-cityImpact">+₹0</strong></span>
               </div>
               <div class="breakdown-item">
                 <img class="breakdown-star" src="star.svg" alt="" width="20" height="20">
-                <span class="breakdown-text">Member composition <strong id="c1-familyImpact">+₹0</strong></span>
+                <span class="breakdown-text">Members covered <strong id="c1-familyImpact">+₹0</strong></span>
               </div>
             </div>
           </div>
@@ -373,7 +377,7 @@
           </div>
 
           <div class="option-group">
-            <label class="option-label">What are your financial goals?</label>
+            <label class="option-label">Select future goals</label>
             <div class="toggle-buttons multi-select-grid">
               <button class="toggle-btn multi-btn active" data-calc="c3" data-group="goals" data-value="education">Education</button>
               <button class="toggle-btn multi-btn" data-calc="c3" data-group="goals" data-value="marriages">Marriages</button>
@@ -517,6 +521,90 @@
               <div class="breakdown-item">
                 <img class="breakdown-star" src="star.svg" alt="" width="20" height="20">
                 <span class="breakdown-text">Ensures all outstanding loans are settled within the cover period</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CALCULATOR 5: HLV (Human Life Value) Calculator ========== -->
+  <section class="calculator-section" id="calc5">
+    <div class="calculator-wrapper">
+      <div class="calculator-container">
+        <div class="input-panel">
+          <h1 class="calculator-title">Human Life Value<br>Calculator</h1>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label class="slider-label">Your age</label>
+              <div class="slider-value-box"><span id="c5-ageValue">30</span></div>
+            </div>
+            <div class="slider-track-wrapper">
+              <input type="range" id="c5-ageSlider" min="18" max="65" value="30" class="custom-slider">
+            </div>
+            <div class="slider-range"><span>18 yrs</span><span>65 yrs</span></div>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label class="slider-label">Annual income</label>
+              <div class="slider-value-box"><span id="c5-incomeValue">₹10L</span></div>
+            </div>
+            <div class="slider-track-wrapper">
+              <input type="range" id="c5-incomeSlider" min="1" max="200" value="10" class="custom-slider">
+            </div>
+            <div class="slider-range"><span>₹1L</span><span>₹2Cr</span></div>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label class="slider-label">Annual expenses</label>
+              <div class="slider-value-box"><span id="c5-expensesValue">₹4L</span></div>
+            </div>
+            <div class="slider-track-wrapper">
+              <input type="range" id="c5-expensesSlider" min="1" max="200" value="4" class="custom-slider">
+            </div>
+            <div class="slider-range"><span>₹1L</span><span>₹2Cr</span></div>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label class="slider-label">Planned retirement age</label>
+              <div class="slider-value-box"><span id="c5-retireValue">60 yrs</span></div>
+            </div>
+            <div class="slider-track-wrapper">
+              <input type="range" id="c5-retireSlider" min="40" max="70" value="60" step="1" class="custom-slider">
+            </div>
+            <div class="slider-range"><span>40 yrs</span><span>70 yrs</span></div>
+          </div>
+
+          <button class="cta-button" data-calc="c5">Calculate life value</button>
+        </div>
+
+        <div class="results-panel">
+          <div class="results-content">
+            <div class="shield-icon">
+              <img src="Porting.svg" alt="Human life value calculator illustration" width="182" height="182">
+            </div>
+            <div class="premium-display">
+              <p class="premium-amount" id="c5-hlvAmount">₹ 1,20,00,000</p>
+              <p class="premium-subtitle">is your estimated human life value</p>
+            </div>
+            <img class="results-divider" src="divider.svg" alt="">
+            <div class="breakdown-list">
+              <div class="breakdown-item">
+                <img class="breakdown-star" src="star.svg" alt="" width="20" height="20">
+                <span class="breakdown-text">Working years remaining <strong id="c5-yearsLeft">30 yrs</strong></span>
+              </div>
+              <div class="breakdown-item">
+                <img class="breakdown-star" src="star.svg" alt="" width="20" height="20">
+                <span class="breakdown-text">Net annual contribution <strong id="c5-netContrib">₹6L/yr</strong></span>
+              </div>
+              <div class="breakdown-item">
+                <img class="breakdown-star" src="star.svg" alt="" width="20" height="20">
+                <span class="breakdown-text">Recommended cover <strong id="c5-recommended">₹1.2Cr</strong></span>
               </div>
             </div>
           </div>

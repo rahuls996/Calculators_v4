@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // =============================================
-  // CALCULATOR 3: Term Insurance Calculator
+  // CALCULATOR 3: Term Cover Recommendation
   // =============================================
 
   const c3 = {

@@ -625,6 +625,58 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // =============================================
+  // Mobile Number Capture
+  // =============================================
+
+  document.querySelectorAll('.mobile-input').forEach(input => {
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/\D/g, '');
+      const wrapper = input.closest('.mobile-input-wrapper');
+      const capture = input.closest('.mobile-capture');
+      const errorEl = capture.querySelector('.mobile-error');
+      wrapper.classList.remove('error');
+      errorEl.textContent = '';
+    });
+  });
+
+  document.querySelectorAll('.mobile-submit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const calcId = btn.dataset.mobilCalc || btn.getAttribute('data-mobile-calc');
+      const capture = btn.closest('.mobile-capture');
+      const input = capture.querySelector('.mobile-input');
+      const wrapper = capture.querySelector('.mobile-input-wrapper');
+      const errorEl = capture.querySelector('.mobile-error');
+      const value = input.value.trim();
+
+      wrapper.classList.remove('error');
+      errorEl.textContent = '';
+
+      if (!value) {
+        wrapper.classList.add('error');
+        errorEl.textContent = 'Mobile number is required';
+        input.focus();
+        return;
+      }
+
+      if (value.length !== 10) {
+        wrapper.classList.add('error');
+        errorEl.textContent = 'Please enter a valid 10-digit mobile number';
+        input.focus();
+        return;
+      }
+
+      if (!/^[6-9]\d{9}$/.test(value)) {
+        wrapper.classList.add('error');
+        errorEl.textContent = 'Please enter a valid Indian mobile number';
+        input.focus();
+        return;
+      }
+
+      capture.classList.add('submitted');
+    });
+  });
+
+  // =============================================
   // Initialize
   // =============================================
 

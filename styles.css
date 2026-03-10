@@ -397,7 +397,7 @@ body {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.member-stepper:has(.stepper-value:not([data-zero="true"])) {
+.member-stepper:not(:first-child):has(.stepper-value:not([data-zero="true"])) {
   border-color: var(--color-brand-mid);
   box-shadow: 0 0 0 3px var(--purple-100);
 }
@@ -860,15 +860,7 @@ body {
   line-height: 56px;
   letter-spacing: -1px;
   color: var(--color-brand-primary);
-  transition: opacity 0.2s ease;
-}
-
-.premium-amount.fade-out {
-  opacity: 0.15;
-}
-
-.premium-amount.fade-in {
-  opacity: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 /* body-lg: 18px/28px Regular */
@@ -878,6 +870,39 @@ body {
   line-height: 24px;
   color: var(--color-text-secondary);
   text-align: center;
+}
+
+/* Future premium projection */
+.future-premium {
+  display: flex;
+  align-items: center;
+  gap: var(--scale-8);
+  margin-top: var(--scale-12);
+  padding: var(--scale-10) var(--scale-16);
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.12);
+  border-radius: var(--radius-pill);
+}
+
+.future-premium-label {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.future-premium-value {
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.future-premium-diff {
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 600;
+  color: #EF4444;
 }
 
 .results-divider {
@@ -929,6 +954,168 @@ body {
 
 .breakdown-text strong.value-updating {
   opacity: 0.15;
+}
+
+/* ==========================================
+   WhatsApp — Progressive Disclosure
+   ========================================== */
+
+.wa-capture {
+  margin-top: var(--scale-24);
+  text-align: center;
+}
+
+.wa-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--scale-8);
+  padding: 10px var(--scale-20);
+  background: none;
+  border: 1.5px solid #25D366;
+  border-radius: 100px;
+  color: #25D366;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.wa-trigger:hover {
+  background: #25D366;
+  color: #fff;
+}
+
+.wa-trigger:active {
+  transform: scale(0.97);
+}
+
+.wa-trigger-icon {
+  flex-shrink: 0;
+}
+
+.wa-expand {
+  display: none;
+  margin-top: var(--scale-12);
+}
+
+.wa-capture.open .wa-trigger {
+  display: none;
+}
+
+.wa-capture.open .wa-expand {
+  display: block;
+}
+
+.wa-input-group {
+  display: flex;
+  align-items: center;
+  background: var(--surface-primary);
+  border: 1.5px solid var(--border-default);
+  border-radius: 100px;
+  height: 42px;
+  padding: 0 4px 0 var(--scale-16);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wa-input-group:focus-within {
+  border-color: #25D366;
+  box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+}
+
+.wa-input-group.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.06);
+}
+
+.wa-prefix {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  margin-right: 4px;
+  user-select: none;
+}
+
+.wa-phone {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  min-width: 0;
+}
+
+.wa-phone::placeholder {
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+.wa-send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.wa-send-btn:hover {
+  background: #1ead55;
+}
+
+.wa-send-btn:active {
+  transform: scale(0.92);
+}
+
+.wa-send-btn.sending {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.wa-error {
+  font-size: 11px;
+  color: #ef4444;
+  margin: 0;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.2s ease, margin 0.2s ease;
+}
+
+.wa-error.visible {
+  max-height: 24px;
+  margin-top: 6px;
+}
+
+.wa-success {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--scale-8);
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a9e46;
+  padding: 10px 0;
+}
+
+.wa-success svg {
+  color: #25D366;
+}
+
+.wa-capture.sent .wa-trigger,
+.wa-capture.sent .wa-expand {
+  display: none;
+}
+
+.wa-capture.sent .wa-success {
+  display: flex;
 }
 
 /* ==========================================
@@ -1143,6 +1330,25 @@ body {
     font-size: 14px;
   }
 
+  .future-premium {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: var(--scale-8) var(--scale-12);
+    gap: var(--scale-4);
+  }
+
+  .future-premium-label {
+    font-size: 12px;
+  }
+
+  .future-premium-value {
+    font-size: 13px;
+  }
+
+  .future-premium-diff {
+    font-size: 11px;
+  }
+
   .shield-icon img {
     width: 140px;
     height: 140px;
@@ -1159,5 +1365,18 @@ body {
 
   .results-divider {
     margin-bottom: var(--scale-24);
+  }
+
+  .wa-capture {
+    margin-top: var(--scale-16);
+  }
+
+  .wa-trigger {
+    font-size: 12px;
+    padding: 9px var(--scale-16);
+  }
+
+  .wa-input-group {
+    height: 40px;
   }
 }

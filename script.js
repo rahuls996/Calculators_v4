@@ -49,25 +49,62 @@ document.addEventListener('DOMContentLoaded', () => {
     return 6.0 + (age - 65) * 0.35;
   }
 
-  const animateTimers = new WeakMap();
+  const rollState = new WeakMap();
+
+  function parseNumber(text) {
+    const digits = text.replace(/[^0-9]/g, '');
+    return digits ? parseInt(digits, 10) : 0;
+  }
 
   function animateAmount(el, text) {
-    if (el.textContent === text) return;
+    const currentText = el.dataset.currentText || el.textContent.trim();
+    if (currentText === text) return;
 
-    const prev = animateTimers.get(el);
-    if (prev) clearTimeout(prev);
+    const prev = rollState.get(el);
+    if (prev) cancelAnimationFrame(prev.raf);
 
-    el.classList.add('fade-out');
-    el.classList.remove('fade-in');
+    const fromVal = parseNumber(currentText);
+    const toVal = parseNumber(text);
+    const prefix = text.match(/^[^0-9]*/)[0];
+    const suffix = text.match(/[^0-9]*$/)[0];
+    const isYears = /years?$/i.test(text);
 
-    const timer = setTimeout(() => {
+    el.dataset.currentText = text;
+
+    if (fromVal === toVal) {
       el.textContent = text;
-      el.classList.remove('fade-out');
-      el.classList.add('fade-in');
-      animateTimers.delete(el);
-    }, 120);
+      return;
+    }
 
-    animateTimers.set(el, timer);
+    const duration = 350;
+    const start = performance.now();
+    const diff = toVal - fromVal;
+
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+
+      let current = Math.round(fromVal + diff * eased);
+
+      if (isYears) {
+        el.textContent = current + ' years';
+      } else {
+        current = Math.round(current / 100) * 100;
+        el.textContent = prefix + current.toLocaleString('en-IN') + suffix;
+      }
+
+      if (progress < 1) {
+        const state = { raf: requestAnimationFrame(tick) };
+        rollState.set(el, state);
+      } else {
+        el.textContent = text;
+        rollState.delete(el);
+      }
+    }
+
+    const state = { raf: requestAnimationFrame(tick) };
+    rollState.set(el, state);
   }
 
   function animateValue(el, text) {
@@ -172,12 +209,32 @@ document.addEventListener('DOMContentLoaded', () => {
       return { total, age: ageComp, city: cityComp, member: memberComp };
     },
 
+    calculateForAge(age) {
+      const base = 5000;
+      const ageMul = getAgeMultiplier(age);
+      const ageComp = Math.round((base * ageMul - base) / 100) * 100;
+      const cityMul = cityRiskMap[this.state.city] || 1.0;
+      const cityComp = Math.round((base * (cityMul - 1) * 2) / 100) * 100;
+      const cover = this.coverSteps[this.state.coverIndex];
+      const coverMul = cover / 10;
+      const coverComp = Math.round(base * (coverMul - 1) * 0.3 / 100) * 100;
+      const memberComp = Math.round(
+        ((this.state.adults - 1) * 1500 + this.state.children * 600 + this.state.parents * 2800) / 100
+      ) * 100;
+      return Math.max(base + ageComp + cityComp + coverComp + memberComp, 2000);
+    },
+
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c1-premiumAmount'), formatINR(r.total));
       animateValue(document.getElementById('c1-ageImpact'), formatImpact(r.age));
       animateValue(document.getElementById('c1-cityImpact'), formatImpact(r.city));
       animateValue(document.getElementById('c1-familyImpact'), formatImpact(r.member));
+
+      const future = this.calculateForAge(this.state.age + 5);
+      const diff = future - r.total;
+      document.getElementById('c1-futureValue').textContent = formatINR(future);
+      document.getElementById('c1-futureDiff').textContent = '+' + formatINR(diff).replace('₹ ', '₹') + '/yr';
     },
 
     updateStepperButtons() {
@@ -261,12 +318,30 @@ document.addEventListener('DOMContentLoaded', () => {
       return { total, age: ageComp, city: cityComp, family: familyComp };
     },
 
+    calculateForAge(age) {
+      const base = 5000;
+      const ageMul = getAgeMultiplier(age);
+      const ageComp = Math.round((base * ageMul - base) / 100) * 100;
+      const cityMul = cityRiskMap[this.state.city] || 1.0;
+      const cityComp = Math.round((base * (cityMul - 1) * 2) / 100) * 100;
+      const familyComp = Math.round((this.state.family - 1) * 1550 / 100) * 100;
+      const incomeFactor = Math.round(this.state.income * 30 / 100) * 100;
+      const existingDiscount = -Math.round(this.state.existing * 15 / 100) * 100;
+      const companyDiscount = -Math.round(this.state.company * 10 / 100) * 100;
+      return Math.max(base + ageComp + cityComp + familyComp + incomeFactor + existingDiscount + companyDiscount, 2000);
+    },
+
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c2-premiumAmount'), formatINR(r.total));
       animateValue(document.getElementById('c2-ageImpact'), formatImpact(r.age));
       animateValue(document.getElementById('c2-cityImpact'), formatImpact(r.city));
       animateValue(document.getElementById('c2-familyImpact'), formatImpact(r.family));
+
+      const future = this.calculateForAge(this.state.age + 5);
+      const diff = future - r.total;
+      document.getElementById('c2-futureValue').textContent = formatINR(future);
+      document.getElementById('c2-futureDiff').textContent = '+' + formatINR(diff).replace('₹ ', '₹') + '/yr';
     },
 
     init() {
@@ -354,6 +429,26 @@ document.addEventListener('DOMContentLoaded', () => {
       return { total, age: ageComp, cover: coverFactor, family: dependentComp, liability: liabilityComp };
     },
 
+    calculateForAge(age) {
+      const annualIncome = this.state.income * 100000;
+      const annualExpenses = this.state.expenses * 12;
+      const yearsToRetire = Math.max(60 - age, 5);
+      const incomeReplacement = annualIncome * Math.min(yearsToRetire, 20);
+      const expenseCover = annualExpenses * 10;
+      const liabilityAmount = this.state.liabilities * 100000;
+      const goalAmount = this.state.goals.length * 1500000;
+      const existingCover = this.state.existing * 100000;
+      const rawNeed = incomeReplacement + expenseCover + liabilityAmount + goalAmount - existingCover;
+      const recommended = Math.max(rawNeed, 2500000);
+      const base = 6000;
+      const ageMul = getAgeMultiplier(age);
+      const ageComp = Math.round((base * ageMul - base) / 100) * 100;
+      const dependentComp = Math.round((this.state.dependents - 1) * 1200 / 100) * 100;
+      const coverFactor = Math.round(recommended / 1000000 * 800 / 100) * 100;
+      const liabilityComp = Math.round(this.state.liabilities * 200 / 100) * 100;
+      return Math.max(base + ageComp + dependentComp + coverFactor + liabilityComp, 3000);
+    },
+
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c3-premiumAmount'), formatINR(r.total));
@@ -361,6 +456,11 @@ document.addEventListener('DOMContentLoaded', () => {
       animateValue(document.getElementById('c3-cityImpact'), formatImpact(r.cover));
       animateValue(document.getElementById('c3-familyImpact'), formatImpact(r.family));
       animateValue(document.getElementById('c3-smokerImpact'), formatImpact(r.liability));
+
+      const future = this.calculateForAge(this.state.age + 5);
+      const diff = future - r.total;
+      document.getElementById('c3-futureValue').textContent = formatINR(future);
+      document.getElementById('c3-futureDiff').textContent = '+' + formatINR(diff).replace('₹ ', '₹') + '/yr';
     },
 
     init() {
@@ -644,6 +744,63 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.searchable-select.open').forEach(s => s.classList.remove('open'));
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // =============================================
+  // WhatsApp Soft Lead Capture
+  // =============================================
+
+  document.querySelectorAll('.wa-trigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const calcId = trigger.dataset.waCalc;
+      const captureEl = document.getElementById(`${calcId}-waCapture`);
+      captureEl.classList.add('open');
+      const phoneInput = document.getElementById(`${calcId}-waPhone`);
+      setTimeout(() => phoneInput.focus(), 100);
+    });
+  });
+
+  document.querySelectorAll('.wa-phone').forEach(input => {
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/\D/g, '');
+      const group = input.closest('.wa-input-group');
+      const errorEl = document.getElementById(input.id.replace('waPhone', 'waError'));
+      group.classList.remove('error');
+      if (errorEl) { errorEl.textContent = ''; errorEl.classList.remove('visible'); }
+    });
+  });
+
+  document.querySelectorAll('.wa-send-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const calcId = btn.dataset.waCalc;
+      const input = document.getElementById(`${calcId}-waPhone`);
+      const group = input.closest('.wa-input-group');
+      const errorEl = document.getElementById(`${calcId}-waError`);
+      const captureEl = document.getElementById(`${calcId}-waCapture`);
+      const phone = input.value.trim();
+
+      if (phone.length === 0) {
+        group.classList.add('error');
+        errorEl.textContent = 'Enter your mobile number';
+        errorEl.classList.add('visible');
+        input.focus();
+        return;
+      }
+      if (phone.length !== 10 || !/^[6-9]/.test(phone)) {
+        group.classList.add('error');
+        errorEl.textContent = 'Enter a valid 10-digit number';
+        errorEl.classList.add('visible');
+        input.focus();
+        return;
+      }
+
+      btn.classList.add('sending');
+      setTimeout(() => {
+        btn.classList.remove('sending');
+        captureEl.classList.remove('open');
+        captureEl.classList.add('sent');
+      }, 800);
     });
   });
 

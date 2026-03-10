@@ -49,12 +49,34 @@ document.addEventListener('DOMContentLoaded', () => {
     return 6.0 + (age - 65) * 0.35;
   }
 
+  const animateTimers = new WeakMap();
+
   function animateAmount(el, text) {
-    el.classList.add('updating');
+    if (el.textContent === text) return;
+
+    const prev = animateTimers.get(el);
+    if (prev) clearTimeout(prev);
+
+    el.classList.add('fade-out');
+    el.classList.remove('fade-in');
+
+    const timer = setTimeout(() => {
+      el.textContent = text;
+      el.classList.remove('fade-out');
+      el.classList.add('fade-in');
+      animateTimers.delete(el);
+    }, 120);
+
+    animateTimers.set(el, timer);
+  }
+
+  function animateValue(el, text) {
+    if (el.textContent === text) return;
+    el.classList.add('value-updating');
     setTimeout(() => {
       el.textContent = text;
-      el.classList.remove('updating');
-    }, 150);
+      el.classList.remove('value-updating');
+    }, 100);
   }
 
   function initAllSliders() {
@@ -153,9 +175,9 @@ document.addEventListener('DOMContentLoaded', () => {
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c1-premiumAmount'), formatINR(r.total));
-      document.getElementById('c1-ageImpact').textContent = formatImpact(r.age);
-      document.getElementById('c1-cityImpact').textContent = formatImpact(r.city);
-      document.getElementById('c1-familyImpact').textContent = formatImpact(r.member);
+      animateValue(document.getElementById('c1-ageImpact'), formatImpact(r.age));
+      animateValue(document.getElementById('c1-cityImpact'), formatImpact(r.city));
+      animateValue(document.getElementById('c1-familyImpact'), formatImpact(r.member));
     },
 
     updateStepperButtons() {
@@ -242,9 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c2-premiumAmount'), formatINR(r.total));
-      document.getElementById('c2-ageImpact').textContent = formatImpact(r.age);
-      document.getElementById('c2-cityImpact').textContent = formatImpact(r.city);
-      document.getElementById('c2-familyImpact').textContent = formatImpact(r.family);
+      animateValue(document.getElementById('c2-ageImpact'), formatImpact(r.age));
+      animateValue(document.getElementById('c2-cityImpact'), formatImpact(r.city));
+      animateValue(document.getElementById('c2-familyImpact'), formatImpact(r.family));
     },
 
     init() {
@@ -335,10 +357,10 @@ document.addEventListener('DOMContentLoaded', () => {
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c3-premiumAmount'), formatINR(r.total));
-      document.getElementById('c3-ageImpact').textContent = formatImpact(r.age);
-      document.getElementById('c3-cityImpact').textContent = formatImpact(r.cover);
-      document.getElementById('c3-familyImpact').textContent = formatImpact(r.family);
-      document.getElementById('c3-smokerText').innerHTML = 'Liability adjustment <strong id="c3-smokerImpact">' + formatImpact(r.liability) + '</strong>';
+      animateValue(document.getElementById('c3-ageImpact'), formatImpact(r.age));
+      animateValue(document.getElementById('c3-cityImpact'), formatImpact(r.cover));
+      animateValue(document.getElementById('c3-familyImpact'), formatImpact(r.family));
+      animateValue(document.getElementById('c3-smokerImpact'), formatImpact(r.liability));
     },
 
     init() {
@@ -414,8 +436,9 @@ document.addEventListener('DOMContentLoaded', () => {
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c4-yearsAmount'), r.years + ' years');
-      document.getElementById('c4-point1').innerHTML =
-        'Covers your earning years until retirement at <strong>' + r.retireAge + '</strong>';
+      const point1 = document.getElementById('c4-point1');
+      const newPoint1 = 'Covers your earning years until retirement at <strong>' + r.retireAge + '</strong>';
+      if (point1.innerHTML !== newPoint1) point1.innerHTML = newPoint1;
     },
 
     init() {
@@ -500,9 +523,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const r = this.calculate();
       const hlvFormatted = '₹ ' + r.hlv.toLocaleString('en-IN');
       animateAmount(document.getElementById('c5-hlvAmount'), hlvFormatted);
-      document.getElementById('c5-yearsLeft').textContent = r.yearsLeft + ' yrs';
-      document.getElementById('c5-netContrib').textContent = this.formatHLV(Math.round(r.netAnnual / 100000) * 100000) + '/yr';
-      document.getElementById('c5-recommended').textContent = this.formatHLV(r.hlv);
+      animateValue(document.getElementById('c5-yearsLeft'), r.yearsLeft + ' yrs');
+      animateValue(document.getElementById('c5-netContrib'), this.formatHLV(Math.round(r.netAnnual / 100000) * 100000) + '/yr');
+      animateValue(document.getElementById('c5-recommended'), this.formatHLV(r.hlv));
     },
 
     init() {
@@ -621,58 +644,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.searchable-select.open').forEach(s => s.classList.remove('open'));
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  });
-
-  // =============================================
-  // Mobile Number Capture
-  // =============================================
-
-  document.querySelectorAll('.mobile-input').forEach(input => {
-    input.addEventListener('input', () => {
-      input.value = input.value.replace(/\D/g, '');
-      const wrapper = input.closest('.mobile-input-wrapper');
-      const capture = input.closest('.mobile-capture');
-      const errorEl = capture.querySelector('.mobile-error');
-      wrapper.classList.remove('error');
-      errorEl.textContent = '';
-    });
-  });
-
-  document.querySelectorAll('.mobile-submit-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const calcId = btn.dataset.mobilCalc || btn.getAttribute('data-mobile-calc');
-      const capture = btn.closest('.mobile-capture');
-      const input = capture.querySelector('.mobile-input');
-      const wrapper = capture.querySelector('.mobile-input-wrapper');
-      const errorEl = capture.querySelector('.mobile-error');
-      const value = input.value.trim();
-
-      wrapper.classList.remove('error');
-      errorEl.textContent = '';
-
-      if (!value) {
-        wrapper.classList.add('error');
-        errorEl.textContent = 'Mobile number is required';
-        input.focus();
-        return;
-      }
-
-      if (value.length !== 10) {
-        wrapper.classList.add('error');
-        errorEl.textContent = 'Please enter a valid 10-digit mobile number';
-        input.focus();
-        return;
-      }
-
-      if (!/^[6-9]\d{9}$/.test(value)) {
-        wrapper.classList.add('error');
-        errorEl.textContent = 'Please enter a valid Indian mobile number';
-        input.focus();
-        return;
-      }
-
-      capture.classList.add('submitted');
     });
   });
 

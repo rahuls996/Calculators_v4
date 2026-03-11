@@ -807,8 +807,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  align-items: stretch;
   padding: var(--scale-32);
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-2xl);
@@ -825,6 +824,7 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%;
+  flex: 1;
 }
 
 .shield-icon {
@@ -850,7 +850,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: var(--scale-8);
-  margin-bottom: var(--scale-32);
+  margin-bottom: var(--scale-24);
 }
 
 /* display-md: 48px/56px Bold */
@@ -872,146 +872,107 @@ body {
   text-align: center;
 }
 
-/* Future premium projection */
-.future-premium {
-  display: flex;
-  align-items: center;
-  gap: var(--scale-8);
-  margin-top: var(--scale-12);
-  padding: var(--scale-10) var(--scale-16);
-  background: rgba(239, 68, 68, 0.06);
-  border: 1px solid rgba(239, 68, 68, 0.12);
-  border-radius: var(--radius-pill);
-}
 
-.future-premium-label {
-  font-family: var(--font-family);
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--color-text-secondary);
-}
-
-.future-premium-value {
-  font-family: var(--font-family);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-.future-premium-diff {
-  font-family: var(--font-family);
-  font-size: 12px;
-  font-weight: 600;
-  color: #EF4444;
-}
-
-.results-divider {
-  display: block;
-  width: 100%;
-  max-width: 344px;
-  height: auto;
-  margin-bottom: var(--scale-32);
-}
-
-.breakdown-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--scale-16);
-  align-self: center;
-}
-
-.breakdown-list-duration {
-  gap: var(--scale-20);
-}
-
-.breakdown-item {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--scale-10);
-}
-
-.breakdown-star {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  margin-top: 2px;
-  object-fit: contain;
-}
-
-/* body-md: 16px/24px Regular */
-.breakdown-text {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  color: var(--color-text-primary);
-}
-
-.breakdown-text strong {
-  font-weight: 600;
-  display: inline-block;
-  transition: opacity 0.18s ease;
-}
-
-.breakdown-text strong.value-updating {
-  opacity: 0.15;
-}
-
-/* ==========================================
-   Buy CTA — Bottom Link
-   ========================================== */
-
-.buy-cta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: auto;
-  padding: var(--scale-16) 0 0;
-  border-top: 1px dashed var(--color-border-default);
-  text-decoration: none;
-  cursor: pointer;
-  margin-top: auto;
-  padding-top: var(--scale-20);
-}
-
-.buy-cta-text {
-  font-family: var(--font-family);
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--color-text-secondary);
-  line-height: 20px;
-}
-
-.buy-cta-action {
+/* Per-day nudge (replaces the confusing "Wait 5 years" pill) */
+.premium-perday {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: var(--purple-50);
-  border: 1.5px solid var(--purple-200);
+  gap: var(--scale-6);
+  padding: 5px var(--scale-12);
+  background: var(--green-50);
+  border: 1px solid rgba(34, 197, 94, 0.2);
   border-radius: var(--radius-pill);
   font-family: var(--font-family);
   font-size: 13px;
-  font-weight: 600;
-  color: var(--color-brand-primary);
-  transition: all 0.2s ease;
+  font-weight: 500;
+  color: var(--green-600);
+  line-height: 18px;
   white-space: nowrap;
 }
 
-.buy-cta:hover .buy-cta-action {
-  background: var(--purple-100);
-  border-color: var(--color-brand-mid);
-  box-shadow: 0 2px 8px rgba(104, 65, 230, 0.15);
+/* Plans CTA Block — anchored to bottom of results */
+.plans-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--scale-16);
+  margin-top: auto;
+  padding: var(--scale-20) var(--scale-24);
+  background: var(--color-brand-light);
+  border: 1.5px solid var(--purple-200);
+  border-radius: var(--radius-xl);
+  text-align: center;
 }
 
-.buy-cta-action svg {
+.plans-block-text {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--color-brand-primary);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.plans-trust {
+  display: flex;
+  flex-direction: column;
+  gap: var(--scale-6);
+}
+
+.plans-trust-item {
+  display: flex;
+  align-items: center;
+  gap: var(--scale-8);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  line-height: 20px;
+}
+
+.plans-trust-item::before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
-  transition: transform 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='9' cy='9' r='9' fill='%236841E6' fill-opacity='0.12'/%3E%3Cpath d='M5.5 9L7.5 11L12.5 6.5' stroke='%236841E6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
-.buy-cta:hover .buy-cta-action svg {
-  transform: translateX(3px);
+.plans-block-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--scale-8);
+  padding: 13px var(--scale-24);
+  background: var(--color-brand-primary);
+  color: #fff;
+  font-family: var(--font-family);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  letter-spacing: 0.1px;
 }
+
+.plans-block-btn:hover {
+  background: var(--purple-700);
+  box-shadow: 0 4px 16px rgba(104, 65, 230, 0.3);
+  transform: translateY(-1px);
+}
+
+.plans-block-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
 
 /* ==========================================
    Responsive — Tablet (≤900px)
@@ -1086,16 +1047,21 @@ body {
   }
 
   .calculator-section {
-    padding: var(--scale-16) var(--scale-12);
+    padding: var(--scale-12) var(--scale-8);
   }
 
   .calculator-container {
-    padding: var(--scale-16);
-    gap: var(--scale-16);
+    padding: var(--scale-12);
+    gap: var(--scale-12);
   }
 
   .input-panel {
-    gap: var(--scale-20);
+    gap: var(--scale-16);
+    padding-bottom: 68px;
+  }
+
+  .slider-group {
+    gap: var(--scale-4);
   }
 
   .toggle-buttons {
@@ -1107,23 +1073,15 @@ body {
   }
 
   .calculator-title {
-    font-size: 24px;
-    line-height: 32px;
+    font-size: 22px;
+    line-height: 28px;
+    margin-bottom: 0;
   }
 
   .premium-amount {
     font-size: 32px;
     line-height: 40px;
     letter-spacing: -0.5px;
-  }
-
-  .breakdown-text {
-    font-size: 14px;
-    line-height: 20px;
-  }
-
-  .results-divider {
-    max-width: 100%;
   }
 
   .slider-label {
@@ -1150,6 +1108,48 @@ body {
     font-size: 14px;
   }
 
+  .member-stepper-group {
+    grid-template-columns: 1fr;
+    gap: 0;
+    border: 1.5px solid var(--color-border-default);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .member-stepper {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: var(--scale-12) var(--scale-16);
+    gap: 0;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid var(--color-border-default);
+  }
+
+  .member-stepper:last-child {
+    border-bottom: none;
+  }
+
+  .member-stepper:not(:first-child):has(.stepper-value:not([data-zero="true"])) {
+    border-color: var(--color-border-default);
+    box-shadow: none;
+  }
+
+  .member-stepper-icon {
+    display: none;
+  }
+
+  .member-stepper-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .stepper-value {
+    font-size: 18px;
+    min-width: 22px;
+  }
+
   .stepper-btn {
     width: 28px;
     height: 28px;
@@ -1160,27 +1160,8 @@ body {
     height: 13px;
   }
 
-  .stepper-value {
-    font-size: 18px;
-    min-width: 22px;
-  }
-
   .member-stepper-controls {
     gap: var(--scale-8);
-  }
-
-  .member-stepper {
-    padding: var(--scale-12) var(--scale-8);
-    gap: var(--scale-8);
-  }
-
-  .member-stepper-icon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .member-stepper-label {
-    font-size: 11px;
   }
 
   .multi-btn {
@@ -1217,62 +1198,58 @@ body {
   }
 
   .cta-button {
-    height: 48px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: 52px;
     font-size: 15px;
+    border-radius: 0;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
   }
 
   .premium-subtitle {
     font-size: 14px;
   }
 
-  .future-premium {
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: var(--scale-8) var(--scale-12);
-    gap: var(--scale-4);
+
+  .shield-icon,
+  .shield-icon-large {
+    display: none;
   }
 
-  .future-premium-label {
-    font-size: 12px;
-  }
-
-  .future-premium-value {
-    font-size: 13px;
-  }
-
-  .future-premium-diff {
-    font-size: 11px;
-  }
-
-  .shield-icon img {
-    width: 140px;
-    height: 140px;
-  }
-
-  .shield-icon-large img {
-    width: 150px;
-    height: 150px;
+  .results-panel {
+    padding: var(--scale-24) var(--scale-16);
   }
 
   .premium-display {
-    margin-bottom: var(--scale-24);
+    margin-bottom: var(--scale-16);
   }
 
-  .results-divider {
-    margin-bottom: var(--scale-24);
-  }
-
-  .buy-cta {
-    padding-top: var(--scale-16);
+  .plans-block {
+    padding: var(--scale-16);
+    gap: var(--scale-12);
     margin-top: var(--scale-20);
   }
 
-  .buy-cta-text {
-    font-size: 12px;
+  .plans-block-text {
+    font-size: 11px;
   }
 
-  .buy-cta-action {
-    font-size: 12px;
-    padding: 7px 14px;
+  .plans-trust-item {
+    font-size: 13px;
   }
+
+  .plans-block-btn {
+    padding: 12px var(--scale-16);
+    font-size: 14px;
+  }
+
+  .premium-perday {
+    font-size: 12px;
+    white-space: normal;
+    text-align: center;
+  }
+
 }

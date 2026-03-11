@@ -227,14 +227,12 @@ document.addEventListener('DOMContentLoaded', () => {
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c1-premiumAmount'), formatINR(r.total));
-      animateValue(document.getElementById('c1-ageImpact'), formatImpact(r.age));
-      animateValue(document.getElementById('c1-cityImpact'), formatImpact(r.city));
-      animateValue(document.getElementById('c1-familyImpact'), formatImpact(r.member));
-
-      const future = this.calculateForAge(this.state.age + 5);
-      const diff = future - r.total;
-      document.getElementById('c1-futureValue').textContent = formatINR(future);
-      document.getElementById('c1-futureDiff').textContent = '+' + formatINR(diff).replace('₹ ', '₹') + '/yr';
+      const monthly = Math.ceil(r.total / 12);
+      const daily = Math.ceil(r.total / 365);
+      const plansEl = document.getElementById('c1-plansText');
+      if (plansEl) plansEl.textContent = 'Starting at ' + formatINR(monthly) + '/month';
+      const perdayEl = document.getElementById('c1-perDay');
+      if (perdayEl) perdayEl.textContent = 'That\'s just ₹' + daily + '/day — less than a coffee';
       if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
     },
 
@@ -335,14 +333,12 @@ document.addEventListener('DOMContentLoaded', () => {
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c2-premiumAmount'), formatINR(r.total));
-      animateValue(document.getElementById('c2-ageImpact'), formatImpact(r.age));
-      animateValue(document.getElementById('c2-cityImpact'), formatImpact(r.city));
-      animateValue(document.getElementById('c2-familyImpact'), formatImpact(r.family));
-
-      const future = this.calculateForAge(this.state.age + 5);
-      const diff = future - r.total;
-      document.getElementById('c2-futureValue').textContent = formatINR(future);
-      document.getElementById('c2-futureDiff').textContent = '+' + formatINR(diff).replace('₹ ', '₹') + '/yr';
+      const monthly = Math.ceil(r.total / 12);
+      const daily = Math.ceil(r.total / 365);
+      const plansEl = document.getElementById('c2-plansText');
+      if (plansEl) plansEl.textContent = 'Starting at ' + formatINR(monthly) + '/month';
+      const perdayEl = document.getElementById('c2-perDay');
+      if (perdayEl) perdayEl.textContent = 'That\'s just ₹' + daily + '/day — less than a coffee';
       if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
     },
 
@@ -454,15 +450,11 @@ document.addEventListener('DOMContentLoaded', () => {
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c3-premiumAmount'), formatINR(r.total));
-      animateValue(document.getElementById('c3-ageImpact'), formatImpact(r.age));
-      animateValue(document.getElementById('c3-cityImpact'), formatImpact(r.cover));
-      animateValue(document.getElementById('c3-familyImpact'), formatImpact(r.family));
-      animateValue(document.getElementById('c3-smokerImpact'), formatImpact(r.liability));
-
-      const future = this.calculateForAge(this.state.age + 5);
-      const diff = future - r.total;
-      document.getElementById('c3-futureValue').textContent = formatINR(future);
-      document.getElementById('c3-futureDiff').textContent = '+' + formatINR(diff).replace('₹ ', '₹') + '/yr';
+      const daily = Math.ceil(r.total / 365);
+      const plansEl = document.getElementById('c3-plansText');
+      if (plansEl) plansEl.textContent = '₹1 Cr life cover';
+      const perdayEl = document.getElementById('c3-perDay');
+      if (perdayEl) perdayEl.textContent = 'That\'s just ₹' + daily + '/day — skip one coffee a month';
       if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
     },
 
@@ -539,9 +531,6 @@ document.addEventListener('DOMContentLoaded', () => {
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c4-yearsAmount'), r.years + ' years');
-      const point1 = document.getElementById('c4-point1');
-      const newPoint1 = 'Protects your income until you retire at <strong>' + r.retireAge + '</strong>';
-      if (point1.innerHTML !== newPoint1) point1.innerHTML = newPoint1;
       if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
     },
 
@@ -627,9 +616,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const r = this.calculate();
       const hlvFormatted = '₹ ' + r.hlv.toLocaleString('en-IN');
       animateAmount(document.getElementById('c5-hlvAmount'), hlvFormatted);
-      animateValue(document.getElementById('c5-yearsLeft'), r.yearsLeft + ' yrs');
-      animateValue(document.getElementById('c5-netContrib'), this.formatHLV(Math.round(r.netAnnual / 100000) * 100000) + '/yr');
-      animateValue(document.getElementById('c5-recommended'), this.formatHLV(r.hlv));
       if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
     },
 
@@ -721,15 +707,11 @@ document.addEventListener('DOMContentLoaded', () => {
     update() {
       const r = this.calculate();
       animateAmount(document.getElementById('c6-premiumAmount'), formatINR(r.total));
-      animateValue(document.getElementById('c6-ageImpact'), formatImpact(r.ageComp));
-      animateValue(document.getElementById('c6-coverImpact'), formatImpact(r.coverComp));
-      animateValue(document.getElementById('c6-termImpact'), formatImpact(r.termComp));
-      animateValue(document.getElementById('c6-affordability'), r.affordability + '% of income');
-
-      const future = this.calculateForAge(this.state.age + 5);
-      const diff = future - r.total;
-      document.getElementById('c6-futureValue').textContent = formatINR(future);
-      document.getElementById('c6-futureDiff').textContent = '+' + formatINR(diff).replace('₹ ', '₹') + '/yr';
+      const daily = Math.ceil(r.total / 365);
+      const plansEl = document.getElementById('c6-plansText');
+      if (plansEl) plansEl.textContent = '₹1 Cr life cover';
+      const perdayEl = document.getElementById('c6-perDay');
+      if (perdayEl) perdayEl.textContent = 'That\'s just ₹' + daily + '/day — less than a coffee';
       if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
     },
 
@@ -853,10 +835,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // =============================================
-  // Buy CTA — Dynamic URL with calculator params
+  // Plans CTA — Dynamic URL with calculator params
   // =============================================
 
-  const buyBaseUrls = {
+  const plansBaseUrls = {
     c1: 'https://www.acko.com/health-insurance/buy',
     c2: 'https://www.acko.com/health-insurance/buy',
     c3: 'https://www.acko.com/term-life-insurance/buy',
@@ -865,8 +847,8 @@ document.addEventListener('DOMContentLoaded', () => {
     c6: 'https://www.acko.com/term-life-insurance/buy'
   };
 
-  function buildBuyUrl(calcId) {
-    const base = buyBaseUrls[calcId] || '#';
+  function buildPlansUrl(calcId) {
+    const base = plansBaseUrls[calcId] || '#';
     const params = new URLSearchParams();
     params.set('utm_source', 'calculator');
     params.set('utm_medium', 'seo');
@@ -905,8 +887,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateBuyCtaUrls() {
     ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'].forEach(id => {
-      const el = document.getElementById(id + '-buyCta');
-      if (el) el.href = buildBuyUrl(id);
+      const el = document.getElementById(id + '-plansBtn');
+      if (el) el.href = buildPlansUrl(id);
     });
   }
 

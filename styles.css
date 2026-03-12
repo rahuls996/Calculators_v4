@@ -1017,6 +1017,18 @@ body {
   flex-shrink: 0;
 }
 
+/* Disclaimer */
+.calc-disclaimer {
+  margin-top: var(--scale-16);
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+  text-align: center;
+}
+
 
 /* ==========================================
    Responsive — Tablet (≤900px)

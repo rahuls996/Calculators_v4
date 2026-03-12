@@ -857,9 +857,9 @@ body {
 .premium-amount {
   font-size: 48px;
   font-weight: 700;
-  line-height: 56px;
+  line-height: 54px;
   letter-spacing: -1px;
-  color: var(--color-brand-primary);
+  color: #5920c5;
   font-variant-numeric: tabular-nums;
 }
 
@@ -873,98 +873,122 @@ body {
 }
 
 
-/* Per-day nudge (replaces the confusing "Wait 5 years" pill) */
+/* Per-day nudge — soft purple gradient pill matching Figma */
 .premium-perday {
   display: inline-flex;
   align-items: center;
-  gap: var(--scale-6);
-  padding: 5px var(--scale-12);
-  background: var(--green-50);
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  padding: 4px 16px 4px 8px;
+  background: linear-gradient(100deg, #ebd2ff 0%, rgba(235, 210, 255, 0) 90%);
   border-radius: var(--radius-pill);
   font-family: var(--font-family);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--green-600);
+  color: #5920c5;
   line-height: 18px;
-  white-space: nowrap;
 }
 
-/* Plans CTA Block — anchored to bottom of results */
+/* Plans CTA Block — Figma design: two-section card */
 .plans-block {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--scale-16);
   margin-top: auto;
-  padding: var(--scale-20) var(--scale-24);
-  background: var(--color-brand-light);
-  border: 1.5px solid var(--purple-200);
-  border-radius: var(--radius-xl);
-  text-align: center;
+  border: 1.5px solid #5920c5;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #f8f7fc;
+}
+
+.plans-block-header {
+  display: flex;
+  align-items: center;
+  gap: var(--scale-8);
+  padding: var(--scale-16);
+  padding-bottom: var(--scale-8);
+}
+
+.plans-block-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(104, 65, 230, 0.08);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.plans-block-icon svg {
+  width: 28px;
+  height: 28px;
 }
 
 .plans-block-text {
   font-family: var(--font-family);
-  font-size: 13px;
+  font-size: 22px;
   font-weight: 600;
-  line-height: 18px;
-  color: var(--color-brand-primary);
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+  line-height: 28px;
+  color: var(--grey-800);
   margin: 0;
 }
 
 .plans-trust {
   display: flex;
-  flex-direction: column;
-  gap: var(--scale-6);
+  align-items: center;
+  padding: var(--scale-12) var(--scale-16);
+  gap: 0;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .plans-trust-item {
   display: flex;
   align-items: center;
   gap: var(--scale-8);
+  flex: 1;
   font-family: var(--font-family);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
-  color: var(--color-text-primary);
-  line-height: 20px;
+  color: #121212;
+  line-height: 18px;
 }
 
-.plans-trust-item::before {
-  content: '';
-  display: inline-block;
-  width: 18px;
-  height: 18px;
+.plans-trust-item svg {
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
-  background-image: url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='9' cy='9' r='9' fill='%236841E6' fill-opacity='0.12'/%3E%3Cpath d='M5.5 9L7.5 11L12.5 6.5' stroke='%236841E6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-size: contain;
+}
+
+.plans-trust-divider {
+  display: block;
+  width: 1px;
+  height: 36px;
+  background: var(--color-border-default);
+  margin: 0 var(--scale-12);
+  flex-shrink: 0;
 }
 
 .plans-block-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--scale-8);
-  padding: 13px var(--scale-24);
-  background: var(--color-brand-primary);
-  color: #fff;
-  font-family: var(--font-family);
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 20px;
+  gap: var(--scale-6);
+  margin: 4px var(--scale-12) var(--scale-12);
+  padding: 13px var(--scale-16);
+  background: #fff;
+  border: 1.5px solid #040222;
   border-radius: var(--radius-md);
+  color: #040222;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
   text-decoration: none;
-  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
-  letter-spacing: 0.1px;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .plans-block-btn:hover {
-  background: var(--purple-700);
-  box-shadow: 0 4px 16px rgba(104, 65, 230, 0.3);
-  transform: translateY(-1px);
+  background: var(--grey-100);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .plans-block-btn svg {
@@ -1228,27 +1252,40 @@ body {
   }
 
   .plans-block {
-    padding: var(--scale-16);
-    gap: var(--scale-12);
     margin-top: var(--scale-20);
   }
 
   .plans-block-text {
-    font-size: 11px;
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .plans-block-header {
+    padding: var(--scale-12);
+    padding-bottom: var(--scale-8);
+  }
+
+  .plans-trust {
+    padding: var(--scale-10) var(--scale-12);
   }
 
   .plans-trust-item {
-    font-size: 13px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .plans-trust-divider {
+    margin: 0 var(--scale-8);
   }
 
   .plans-block-btn {
-    padding: 12px var(--scale-16);
-    font-size: 14px;
+    margin: 4px var(--scale-10) var(--scale-10);
+    padding: 11px var(--scale-12);
+    font-size: 13px;
   }
 
   .premium-perday {
-    font-size: 12px;
-    white-space: normal;
+    font-size: 13px;
     text-align: center;
   }
 

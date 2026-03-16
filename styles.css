@@ -1452,6 +1452,18 @@ body {
   flex-shrink: 0;
 }
 
+/* ── Disclaimer ── */
+
+.calc-disclaimer {
+  margin: var(--scale-16) 0 0;
+  padding-top: var(--scale-12);
+  border-top: 1px solid var(--color-border-default);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--grey-400);
+  text-align: center;
+}
+
 /* ── Mobile: sticky CTA bar ── */
 
 @media (max-width: 480px) {

@@ -1017,18 +1017,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Disclaimer */
-.calc-disclaimer {
-  margin-top: var(--scale-16);
-  font-family: var(--font-family);
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 16px;
-  color: var(--color-text-secondary);
-  opacity: 0.7;
-  text-align: center;
-}
-
 
 /* ==========================================
    Responsive — Tablet (≤900px)
@@ -1351,4 +1339,124 @@ body {
     text-align: center;
   }
 
+}
+
+/* ==========================================
+   v4 — API Loading, Skeleton, Error States
+   ========================================== */
+
+/* ── Skeleton shimmer ── */
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.price-skeleton {
+  height: 54px;
+  width: 220px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    90deg,
+    var(--grey-150) 25%,
+    var(--grey-100) 50%,
+    var(--grey-150) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+  margin: 0 auto var(--scale-24);
+}
+
+/* ── CTA loading state ── */
+
+.cta-button.cta-loading {
+  opacity: 0.72;
+  cursor: not-allowed;
+  gap: var(--scale-10);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.cta-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Error block ── */
+
+.calc-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--scale-12);
+  padding: var(--scale-16) var(--scale-20);
+  margin-bottom: var(--scale-20);
+  background: #fff8f8;
+  border: 1px solid #fcd5d5;
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.calc-error-msg {
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 400;
+  color: #c0392b;
+  line-height: 20px;
+  margin: 0;
+}
+
+.calc-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--scale-8) var(--scale-20);
+  background: none;
+  border: 1.5px solid #c0392b;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 500;
+  color: #c0392b;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.calc-retry-btn:hover {
+  background: #c0392b;
+  color: #ffffff;
+}
+
+/* ── Mobile: sticky CTA bar ── */
+
+@media (max-width: 480px) {
+  .calculator-section {
+    padding-bottom: 84px;
+  }
+
+  .cta-button {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+    border-radius: var(--radius-pill);
+  }
+
+  .cta-button.cta-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }

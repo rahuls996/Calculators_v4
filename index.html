@@ -146,10 +146,15 @@
             <div class="shield-icon">
               <img src="Porting.svg" alt="Insurance shield" width="182" height="182">
             </div>
-            <div class="premium-display">
+            <div class="premium-display" id="c1-result">
               <p class="premium-amount" id="c1-premiumAmount">₹ 13,700</p>
               <p class="premium-subtitle">per year — hospital bills go to zero</p>
               <p class="premium-perday" id="c1-perDay">₹38/day. Less than your morning chai.</p>
+            </div>
+            <div class="price-skeleton" id="c1-skeleton" hidden></div>
+            <div class="calc-error" id="c1-error" hidden>
+              <p class="calc-error-msg">Couldn't fetch your price. Check your connection.</p>
+              <button class="calc-retry-btn" data-calc="c1">Try again</button>
             </div>
             <div class="plans-block">
               <div class="plans-block-top">
@@ -173,7 +178,6 @@
                 </a>
               </div>
             </div>
-            <p class="calc-disclaimer">Indicative premium only. Actual price may vary based on your health history and the plan you choose. ACKO General Insurance Ltd. | IRDAI Reg. No. 157.</p>
           </div>
         </div>
 
@@ -280,10 +284,15 @@
             <div class="shield-icon">
               <img src="Porting.svg" alt="Insurance shield" width="182" height="182">
             </div>
-            <div class="premium-display">
+            <div class="premium-display" id="c2-result">
               <p class="premium-amount" id="c2-premiumAmount">₹ 13,700</p>
               <p class="premium-subtitle">is the cover your family needs</p>
               <p class="premium-perday" id="c2-perDay">Employer cover alone won't be enough. Here's why.</p>
+            </div>
+            <div class="price-skeleton" id="c2-skeleton" hidden></div>
+            <div class="calc-error" id="c2-error" hidden>
+              <p class="calc-error-msg">Couldn't fetch your price. Check your connection.</p>
+              <button class="calc-retry-btn" data-calc="c2">Try again</button>
             </div>
             <div class="plans-block">
               <div class="plans-block-top">
@@ -307,7 +316,6 @@
                 </a>
               </div>
             </div>
-            <p class="calc-disclaimer">Indicative cover amount only. Actual recommendation may vary based on your health history and city. ACKO General Insurance Ltd. | IRDAI Reg. No. 157.</p>
           </div>
         </div>
 
@@ -406,10 +414,15 @@
             <div class="shield-icon">
               <img src="Porting.svg" alt="Insurance shield" width="182" height="182">
             </div>
-            <div class="premium-display">
+            <div class="premium-display" id="c3-result">
               <p class="premium-amount" id="c3-premiumAmount">₹ 13,700</p>
               <p class="premium-subtitle">is the cover your family can't go without</p>
               <p class="premium-perday" id="c3-perDay">Most people are underinsured by 5x. Are you?</p>
+            </div>
+            <div class="price-skeleton" id="c3-skeleton" hidden></div>
+            <div class="calc-error" id="c3-error" hidden>
+              <p class="calc-error-msg">Couldn't fetch your price. Check your connection.</p>
+              <button class="calc-retry-btn" data-calc="c3">Try again</button>
             </div>
             <div class="plans-block">
               <div class="plans-block-top">
@@ -433,7 +446,6 @@
                 </a>
               </div>
             </div>
-            <p class="calc-disclaimer">Indicative cover amount only. Actual recommendation depends on your financial profile and goals. ACKO Life Insurance Ltd. | IRDAI Reg. No. 157.</p>
           </div>
         </div>
 
@@ -522,10 +534,15 @@
             <div class="shield-icon shield-icon-large">
               <img src="Porting.svg" alt="Insurance shield" width="182" height="182">
             </div>
-            <div class="premium-display">
+            <div class="premium-display" id="c4-result">
               <p class="premium-amount" id="c4-yearsAmount">25 years</p>
               <p class="premium-subtitle">is how long your family needs you covered</p>
               <p class="premium-perday" id="c4-perDay">Wait a year and your premium gets more expensive</p>
+            </div>
+            <div class="price-skeleton" id="c4-skeleton" hidden></div>
+            <div class="calc-error" id="c4-error" hidden>
+              <p class="calc-error-msg">Couldn't calculate your term. Check your connection.</p>
+              <button class="calc-retry-btn" data-calc="c4">Try again</button>
             </div>
             <div class="plans-block">
               <div class="plans-block-top">
@@ -549,7 +566,6 @@
                 </a>
               </div>
             </div>
-            <p class="calc-disclaimer">Indicative policy term only. Actual recommendation depends on your financial obligations and goals. ACKO Life Insurance Ltd. | IRDAI Reg. No. 157.</p>
           </div>
         </div>
 
@@ -616,10 +632,15 @@
             <div class="shield-icon">
               <img src="Porting.svg" alt="Human life value calculator illustration" width="182" height="182">
             </div>
-            <div class="premium-display">
+            <div class="premium-display" id="c5-result">
               <p class="premium-amount" id="c5-hlvAmount">₹ 1,20,00,000</p>
               <p class="premium-subtitle">is what your family would lose if you're gone</p>
               <p class="premium-perday" id="c5-perDay">Cover it all for as little as ₹500/month</p>
+            </div>
+            <div class="price-skeleton" id="c5-skeleton" hidden></div>
+            <div class="calc-error" id="c5-error" hidden>
+              <p class="calc-error-msg">Couldn't calculate your life value. Check your connection.</p>
+              <button class="calc-retry-btn" data-calc="c5">Try again</button>
             </div>
             <div class="plans-block">
               <div class="plans-block-top">
@@ -643,7 +664,6 @@
                 </a>
               </div>
             </div>
-            <p class="calc-disclaimer">Indicative Human Life Value (HLV) only. Actual value depends on your income growth, liabilities, and financial goals. ACKO Life Insurance Ltd. | IRDAI Reg. No. 157.</p>
           </div>
         </div>
 
@@ -716,10 +736,15 @@
             <div class="shield-icon">
               <img src="Porting.svg" alt="Term insurance calculator" width="182" height="182">
             </div>
-            <div class="premium-display">
+            <div class="premium-display" id="c6-result">
               <p class="premium-amount" id="c6-premiumAmount">₹ 7,000</p>
               <p class="premium-subtitle">per year — your family stays protected</p>
               <p class="premium-perday" id="c6-perDay">₹19/day to make sure they never struggle</p>
+            </div>
+            <div class="price-skeleton" id="c6-skeleton" hidden></div>
+            <div class="calc-error" id="c6-error" hidden>
+              <p class="calc-error-msg">Couldn't fetch your price. Check your connection.</p>
+              <button class="calc-retry-btn" data-calc="c6">Try again</button>
             </div>
             <div class="plans-block">
               <div class="plans-block-top">
@@ -743,7 +768,6 @@
                 </a>
               </div>
             </div>
-            <p class="calc-disclaimer">Indicative premium only. Actual price depends on your health profile and the plan you choose. ACKO Life Insurance Ltd. | IRDAI Reg. No. 157.</p>
           </div>
         </div>
 
@@ -755,6 +779,7 @@
     </div>
   </div>
 
+  <script src="api.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

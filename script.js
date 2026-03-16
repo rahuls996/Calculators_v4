@@ -15,17 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return '₹ ' + rounded.toLocaleString('en-IN');
   }
 
-  function formatImpact(val) {
-    if (val >= 0) return '+₹' + val.toLocaleString('en-IN');
-    return '-₹' + Math.abs(val).toLocaleString('en-IN');
-  }
-
-  function formatLakhs(val) {
-    if (val >= 100) return '₹1Cr';
-    if (val === 0) return '₹0';
-    return '₹' + val + 'L';
-  }
-
   function formatLakhsWithRupee(val) {
     if (val >= 100) return '₹1Cr';
     if (val === 0) return '₹0';
@@ -38,15 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const val = parseFloat(slider.value);
     const pct = ((val - min) / (max - min)) * 100;
     slider.style.setProperty('--slider-progress', pct + '%');
-  }
-
-  function getAgeMultiplier(age) {
-    if (age <= 25) return 0.6;
-    if (age <= 35) return 0.8 + (age - 25) * 0.04;
-    if (age <= 45) return 1.2 + (age - 35) * 0.08;
-    if (age <= 55) return 2.0 + (age - 45) * 0.15;
-    if (age <= 65) return 3.5 + (age - 55) * 0.25;
-    return 6.0 + (age - 65) * 0.35;
   }
 
   const rollState = new WeakMap();
@@ -66,15 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const fromVal = parseNumber(currentText);
     const toVal = parseNumber(text);
     const prefix = text.match(/^[^0-9]*/)[0];
-    const suffix = text.match(/[^0-9]*$/)[0];
     const isYears = /years?$/i.test(text);
 
     el.dataset.currentText = text;
 
-    if (fromVal === toVal) {
-      el.textContent = text;
-      return;
-    }
+    if (fromVal === toVal) { el.textContent = text; return; }
 
     const duration = 350;
     const start = performance.now();
@@ -84,14 +60,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-
       let current = Math.round(fromVal + diff * eased);
 
       if (isYears) {
         el.textContent = current + ' years';
       } else {
         current = Math.round(current / 100) * 100;
-        el.textContent = prefix + current.toLocaleString('en-IN') + suffix;
+        el.textContent = prefix + current.toLocaleString('en-IN');
       }
 
       if (progress < 1) {
@@ -103,17 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const state = { raf: requestAnimationFrame(tick) };
-    rollState.set(el, state);
-  }
-
-  function animateValue(el, text) {
-    if (el.textContent === text) return;
-    el.classList.add('value-updating');
-    setTimeout(() => {
-      el.textContent = text;
-      el.classList.remove('value-updating');
-    }, 100);
+    rollState.set(el, { raf: requestAnimationFrame(tick) });
   }
 
   function initAllSliders() {
@@ -162,13 +127,10 @@ document.addEventListener('DOMContentLoaded', () => {
         opt.addEventListener('click', () => {
           const value = opt.dataset.value;
           const label = opt.textContent;
-
           select.dataset.value = value;
           textEl.textContent = label;
-
           options.forEach(o => o.classList.remove('selected'));
           opt.classList.add('selected');
-
           select.classList.remove('open');
           select.dispatchEvent(new CustomEvent('change', { detail: { value } }));
         });
@@ -183,66 +145,140 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // =============================================
+  // Loading / Error / Result state helpers
+  // =============================================
+
+  function setLoadingState(calcId, isLoading) {
+    const skeleton = document.getElementById(calcId + '-skeleton');
+    const resultEl = document.getElementById(calcId + '-result');
+    const errorEl  = document.getElementById(calcId + '-error');
+    const btn      = document.querySelector('.cta-button[data-calc="' + calcId + '"]');
+
+    if (isLoading) {
+      if (resultEl) resultEl.hidden = true;
+      if (errorEl)  errorEl.hidden  = true;
+      if (skeleton) skeleton.hidden = false;
+      if (btn) {
+        btn.disabled = true;
+        btn.classList.add('cta-loading');
+        btn.dataset.originalText = btn.textContent.trim();
+        btn.innerHTML = '<span class="cta-spinner"></span>Getting your price…';
+      }
+    } else {
+      if (skeleton) skeleton.hidden = true;
+      if (btn) {
+        btn.disabled = false;
+        btn.classList.remove('cta-loading');
+        if (btn.dataset.originalText) btn.textContent = btn.dataset.originalText;
+      }
+    }
+  }
+
+  function showResult(calcId, result) {
+    const resultEl = document.getElementById(calcId + '-result');
+    const errorEl  = document.getElementById(calcId + '-error');
+    if (errorEl)  errorEl.hidden  = true;
+    if (resultEl) resultEl.hidden = false;
+    renderResult(calcId, result);
+  }
+
+  function showError(calcId) {
+    const resultEl = document.getElementById(calcId + '-result');
+    const errorEl  = document.getElementById(calcId + '-error');
+    if (resultEl) resultEl.hidden = true;
+    if (errorEl)  errorEl.hidden  = false;
+  }
+
+  function renderResult(calcId, result) {
+    if (calcId === 'c1') {
+      animateAmount(document.getElementById('c1-premiumAmount'), formatINR(result.price));
+      const plansEl = document.getElementById('c1-plansText');
+      if (plansEl) plansEl.textContent = result.coverText;
+      const perdayEl = document.getElementById('c1-perDay');
+      if (perdayEl) perdayEl.textContent = result.daily ? '₹' + result.daily + '/day. Less than your morning chai.' : '';
+    } else if (calcId === 'c2') {
+      animateAmount(document.getElementById('c2-premiumAmount'), formatINR(result.price));
+      const plansEl = document.getElementById('c2-plansText');
+      if (plansEl) plansEl.textContent = result.coverText;
+      const perdayEl = document.getElementById('c2-perDay');
+      if (perdayEl) perdayEl.textContent = result.daily ? '₹' + result.daily + '/day — protect your family fully' : '';
+    } else if (calcId === 'c3') {
+      animateAmount(document.getElementById('c3-premiumAmount'), formatINR(result.price));
+      const plansEl = document.getElementById('c3-plansText');
+      if (plansEl) plansEl.textContent = result.coverText;
+      const perdayEl = document.getElementById('c3-perDay');
+      if (perdayEl) perdayEl.textContent = result.daily ? '₹' + result.daily + '/day to protect your family\'s future' : '';
+    } else if (calcId === 'c4') {
+      animateAmount(document.getElementById('c4-yearsAmount'), result.price + ' years');
+    } else if (calcId === 'c5') {
+      animateAmount(document.getElementById('c5-hlvAmount'), '₹ ' + result.price.toLocaleString('en-IN'));
+    } else if (calcId === 'c6') {
+      animateAmount(document.getElementById('c6-premiumAmount'), formatINR(result.price));
+      const plansEl = document.getElementById('c6-plansText');
+      if (plansEl) plansEl.textContent = result.coverText;
+      const perdayEl = document.getElementById('c6-perDay');
+      if (perdayEl) perdayEl.textContent = result.daily ? '₹' + result.daily + '/day to make sure they never struggle' : '';
+    }
+    updateBuyCtaUrls();
+  }
+
+  // =============================================
+  // Main fetch trigger — called by CTA and retry
+  // =============================================
+
+  async function triggerFetch(calcId) {
+    const calcObj = { c1, c2, c3, c4, c5, c6 }[calcId];
+    if (!calcObj) return;
+
+    const params = calcObj.getParams();
+    setLoadingState(calcId, true);
+
+    try {
+      const result = await fetchPrice(calcId, params);
+      setLoadingState(calcId, false);
+      showResult(calcId, result);
+
+      // On mobile, scroll results into view after load
+      if (window.innerWidth <= 900) {
+        const section = document.querySelector('.cta-button[data-calc="' + calcId + '"]')
+          ?.closest('.calculator-section');
+        const panel = section?.querySelector('.results-panel');
+        if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } catch (err) {
+      setLoadingState(calcId, false);
+      showError(calcId);
+    }
+  }
+
+  // =============================================
   // CALCULATOR 1: Health Insurance Calculator
   // =============================================
 
   const c1 = {
     coverSteps: [10, 25, 50, 100],
-    coverLabels: ['₹10L', '₹25L', '₹50L', '₹1Cr'],
+    coverLabels: ['₹10 L', '₹25 L', '₹50 L', '₹1 Cr'],
 
     state: { age: 30, coverIndex: 0, adults: 1, children: 0, parents: 0, city: 'bengaluru' },
 
-    calculate() {
-      const base = 5000;
-      const ageMul = getAgeMultiplier(this.state.age);
-      const ageComp = Math.round((base * ageMul - base) / 100) * 100;
-      const cityMul = cityRiskMap[this.state.city] || 1.0;
-      const cityComp = Math.round((base * (cityMul - 1) * 2) / 100) * 100;
-      const cover = this.coverSteps[this.state.coverIndex];
-      const coverMul = cover / 10;
-      const coverComp = Math.round(base * (coverMul - 1) * 0.3 / 100) * 100;
-      // Adults add full cost, children add 20%, parents add 80% each
-      const memberComp = Math.round(
-        ((this.state.adults - 1) * 1500 + this.state.children * 600 + this.state.parents * 2800) / 100
-      ) * 100;
-      const total = Math.max(base + ageComp + cityComp + coverComp + memberComp, 2000);
-      return { total, age: ageComp, city: cityComp, member: memberComp };
-    },
-
-    calculateForAge(age) {
-      const base = 5000;
-      const ageMul = getAgeMultiplier(age);
-      const ageComp = Math.round((base * ageMul - base) / 100) * 100;
-      const cityMul = cityRiskMap[this.state.city] || 1.0;
-      const cityComp = Math.round((base * (cityMul - 1) * 2) / 100) * 100;
-      const cover = this.coverSteps[this.state.coverIndex];
-      const coverMul = cover / 10;
-      const coverComp = Math.round(base * (coverMul - 1) * 0.3 / 100) * 100;
-      const memberComp = Math.round(
-        ((this.state.adults - 1) * 1500 + this.state.children * 600 + this.state.parents * 2800) / 100
-      ) * 100;
-      return Math.max(base + ageComp + cityComp + coverComp + memberComp, 2000);
-    },
-
-    update() {
-      const r = this.calculate();
-      animateAmount(document.getElementById('c1-premiumAmount'), formatINR(r.total));
-      const monthly = Math.ceil(r.total / 12);
-      const daily = Math.ceil(r.total / 365);
-      const plansEl = document.getElementById('c1-plansText');
-      if (plansEl) plansEl.textContent = 'Starting at ' + formatINR(monthly) + '/month';
-      const perdayEl = document.getElementById('c1-perDay');
-      if (perdayEl) perdayEl.textContent = 'That\'s just ₹' + daily + '/day — less than a coffee';
-      if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
+    getParams() {
+      return {
+        age: this.state.age,
+        coverIndex: this.state.coverIndex,
+        adults: this.state.adults,
+        children: this.state.children,
+        parents: this.state.parents,
+        city: this.state.city
+      };
     },
 
     updateStepperButtons() {
-      document.getElementById('c1-adults-dec').disabled = this.state.adults <= 1;
-      document.getElementById('c1-adults-inc').disabled = this.state.adults >= 4;
+      document.getElementById('c1-adults-dec').disabled  = this.state.adults <= 1;
+      document.getElementById('c1-adults-inc').disabled  = this.state.adults >= 4;
       document.getElementById('c1-children-dec').disabled = this.state.children <= 0;
       document.getElementById('c1-children-inc').disabled = this.state.children >= 4;
-      document.getElementById('c1-parents-dec').disabled = this.state.parents <= 0;
-      document.getElementById('c1-parents-inc').disabled = this.state.parents >= 2;
+      document.getElementById('c1-parents-dec').disabled  = this.state.parents <= 0;
+      document.getElementById('c1-parents-inc').disabled  = this.state.parents >= 2;
     },
 
     initStepper(decId, incId, valId, stateKey, min, max) {
@@ -253,7 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
           el.textContent = this.state[stateKey];
           el.dataset.zero = this.state[stateKey] === 0 ? 'true' : 'false';
           this.updateStepperButtons();
-          this.update();
         }
       });
       document.getElementById(incId).addEventListener('click', () => {
@@ -263,7 +298,6 @@ document.addEventListener('DOMContentLoaded', () => {
           el.textContent = this.state[stateKey];
           el.dataset.zero = this.state[stateKey] === 0 ? 'true' : 'false';
           this.updateStepperButtons();
-          this.update();
         }
       });
     },
@@ -273,26 +307,22 @@ document.addEventListener('DOMContentLoaded', () => {
         this.state.age = parseInt(e.target.value);
         document.getElementById('c1-ageValue').textContent = this.state.age;
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c1-coverSlider').addEventListener('input', (e) => {
         this.state.coverIndex = parseInt(e.target.value);
         document.getElementById('c1-coverValue').textContent = this.coverLabels[this.state.coverIndex];
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c1-citySelect').addEventListener('change', (e) => {
         this.state.city = e.detail.value;
-        this.update();
       });
 
       this.initStepper('c1-adults-dec', 'c1-adults-inc', 'c1-adults-val', 'adults', 1, 4);
       this.initStepper('c1-children-dec', 'c1-children-inc', 'c1-children-val', 'children', 0, 4);
       this.initStepper('c1-parents-dec', 'c1-parents-inc', 'c1-parents-val', 'parents', 0, 2);
       this.updateStepperButtons();
-      this.update();
     }
   };
 
@@ -303,95 +333,52 @@ document.addEventListener('DOMContentLoaded', () => {
   const c2 = {
     state: { age: 30, income: 30, family: 2, existing: 30, company: 5, city: 'bengaluru' },
 
-    calculate() {
-      const base = 5000;
-      const ageMul = getAgeMultiplier(this.state.age);
-      const ageComp = Math.round((base * ageMul - base) / 100) * 100;
-      const cityMul = cityRiskMap[this.state.city] || 1.0;
-      const cityComp = Math.round((base * (cityMul - 1) * 2) / 100) * 100;
-      const familyComp = Math.round((this.state.family - 1) * 1550 / 100) * 100;
-      const incomeFactor = Math.round(this.state.income * 30 / 100) * 100;
-      const existingDiscount = -Math.round(this.state.existing * 15 / 100) * 100;
-      const companyDiscount = -Math.round(this.state.company * 10 / 100) * 100;
-      const total = Math.max(base + ageComp + cityComp + familyComp + incomeFactor + existingDiscount + companyDiscount, 2000);
-      return { total, age: ageComp, city: cityComp, family: familyComp };
-    },
-
-    calculateForAge(age) {
-      const base = 5000;
-      const ageMul = getAgeMultiplier(age);
-      const ageComp = Math.round((base * ageMul - base) / 100) * 100;
-      const cityMul = cityRiskMap[this.state.city] || 1.0;
-      const cityComp = Math.round((base * (cityMul - 1) * 2) / 100) * 100;
-      const familyComp = Math.round((this.state.family - 1) * 1550 / 100) * 100;
-      const incomeFactor = Math.round(this.state.income * 30 / 100) * 100;
-      const existingDiscount = -Math.round(this.state.existing * 15 / 100) * 100;
-      const companyDiscount = -Math.round(this.state.company * 10 / 100) * 100;
-      return Math.max(base + ageComp + cityComp + familyComp + incomeFactor + existingDiscount + companyDiscount, 2000);
-    },
-
-    update() {
-      const r = this.calculate();
-      animateAmount(document.getElementById('c2-premiumAmount'), formatINR(r.total));
-      const monthly = Math.ceil(r.total / 12);
-      const daily = Math.ceil(r.total / 365);
-      const plansEl = document.getElementById('c2-plansText');
-      if (plansEl) plansEl.textContent = 'Starting at ' + formatINR(monthly) + '/month';
-      const perdayEl = document.getElementById('c2-perDay');
-      if (perdayEl) perdayEl.textContent = 'That\'s just ₹' + daily + '/day — less than a coffee';
-      if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
+    getParams() {
+      return { ...this.state };
     },
 
     init() {
       const sliders = {
-        age: document.getElementById('c2-ageSlider'),
-        income: document.getElementById('c2-incomeSlider'),
-        family: document.getElementById('c2-familySlider'),
+        age:      document.getElementById('c2-ageSlider'),
+        income:   document.getElementById('c2-incomeSlider'),
+        family:   document.getElementById('c2-familySlider'),
         existing: document.getElementById('c2-existingSlider'),
-        company: document.getElementById('c2-companySlider')
+        company:  document.getElementById('c2-companySlider')
       };
 
       sliders.age.addEventListener('input', (e) => {
         this.state.age = parseInt(e.target.value);
         document.getElementById('c2-ageValue').textContent = this.state.age;
         updateSliderProgress(e.target);
-        this.update();
       });
 
       sliders.income.addEventListener('input', (e) => {
         this.state.income = parseInt(e.target.value);
         document.getElementById('c2-incomeValue').textContent = formatLakhsWithRupee(this.state.income);
         updateSliderProgress(e.target);
-        this.update();
       });
 
       sliders.family.addEventListener('input', (e) => {
         this.state.family = parseInt(e.target.value);
         document.getElementById('c2-familyValue').textContent = this.state.family;
         updateSliderProgress(e.target);
-        this.update();
       });
 
       sliders.existing.addEventListener('input', (e) => {
         this.state.existing = parseInt(e.target.value);
         document.getElementById('c2-existingValue').textContent = formatLakhsWithRupee(this.state.existing);
         updateSliderProgress(e.target);
-        this.update();
       });
 
       sliders.company.addEventListener('input', (e) => {
         this.state.company = parseInt(e.target.value);
         document.getElementById('c2-companyValue').textContent = formatLakhsWithRupee(this.state.company);
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c2-citySelect').addEventListener('change', (e) => {
         this.state.city = e.detail.value;
-        this.update();
       });
-
-      this.update();
     }
   };
 
@@ -402,60 +389,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const c3 = {
     state: { age: 30, income: 5, expenses: 10000, dependents: 2, existing: 30, liabilities: 2, goals: ['education'] },
 
-    calculate() {
-      const annualIncome = this.state.income * 100000;
-      const annualExpenses = this.state.expenses * 12;
-      const yearsToRetire = Math.max(60 - this.state.age, 5);
-
-      const incomeReplacement = annualIncome * Math.min(yearsToRetire, 20);
-      const expenseCover = annualExpenses * 10;
-      const liabilityAmount = this.state.liabilities * 100000;
-      const goalAmount = this.state.goals.length * 1500000;
-      const existingCover = this.state.existing * 100000;
-
-      const rawNeed = incomeReplacement + expenseCover + liabilityAmount + goalAmount - existingCover;
-      const recommended = Math.max(rawNeed, 2500000);
-
-      const base = 6000;
-      const ageMul = getAgeMultiplier(this.state.age);
-      const ageComp = Math.round((base * ageMul - base) / 100) * 100;
-      const dependentComp = Math.round((this.state.dependents - 1) * 1200 / 100) * 100;
-      const coverFactor = Math.round(recommended / 1000000 * 800 / 100) * 100;
-      const liabilityComp = Math.round(this.state.liabilities * 200 / 100) * 100;
-
-      const total = Math.max(base + ageComp + dependentComp + coverFactor + liabilityComp, 3000);
-      return { total, age: ageComp, cover: coverFactor, family: dependentComp, liability: liabilityComp };
-    },
-
-    calculateForAge(age) {
-      const annualIncome = this.state.income * 100000;
-      const annualExpenses = this.state.expenses * 12;
-      const yearsToRetire = Math.max(60 - age, 5);
-      const incomeReplacement = annualIncome * Math.min(yearsToRetire, 20);
-      const expenseCover = annualExpenses * 10;
-      const liabilityAmount = this.state.liabilities * 100000;
-      const goalAmount = this.state.goals.length * 1500000;
-      const existingCover = this.state.existing * 100000;
-      const rawNeed = incomeReplacement + expenseCover + liabilityAmount + goalAmount - existingCover;
-      const recommended = Math.max(rawNeed, 2500000);
-      const base = 6000;
-      const ageMul = getAgeMultiplier(age);
-      const ageComp = Math.round((base * ageMul - base) / 100) * 100;
-      const dependentComp = Math.round((this.state.dependents - 1) * 1200 / 100) * 100;
-      const coverFactor = Math.round(recommended / 1000000 * 800 / 100) * 100;
-      const liabilityComp = Math.round(this.state.liabilities * 200 / 100) * 100;
-      return Math.max(base + ageComp + dependentComp + coverFactor + liabilityComp, 3000);
-    },
-
-    update() {
-      const r = this.calculate();
-      animateAmount(document.getElementById('c3-premiumAmount'), formatINR(r.total));
-      const daily = Math.ceil(r.total / 365);
-      const plansEl = document.getElementById('c3-plansText');
-      if (plansEl) plansEl.textContent = '₹1 Cr life cover';
-      const perdayEl = document.getElementById('c3-perDay');
-      if (perdayEl) perdayEl.textContent = 'That\'s just ₹' + daily + '/day — skip one coffee a month';
-      if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
+    getParams() {
+      return { ...this.state };
     },
 
     init() {
@@ -463,47 +398,37 @@ document.addEventListener('DOMContentLoaded', () => {
         this.state.age = parseInt(e.target.value);
         document.getElementById('c3-ageValue').textContent = this.state.age;
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c3-incomeSlider').addEventListener('input', (e) => {
         this.state.income = parseInt(e.target.value);
         document.getElementById('c3-incomeValue').textContent = formatLakhsWithRupee(this.state.income);
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c3-expensesSlider').addEventListener('input', (e) => {
         this.state.expenses = parseInt(e.target.value);
         document.getElementById('c3-expensesValue').textContent = '₹' + this.state.expenses.toLocaleString('en-IN');
         updateSliderProgress(e.target);
-        this.update();
       });
-
-
 
       document.getElementById('c3-dependentsSlider').addEventListener('input', (e) => {
         this.state.dependents = parseInt(e.target.value);
         document.getElementById('c3-dependentsValue').textContent = this.state.dependents;
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c3-existingSlider').addEventListener('input', (e) => {
         this.state.existing = parseInt(e.target.value);
         document.getElementById('c3-existingValue').textContent = formatLakhsWithRupee(this.state.existing);
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c3-liabilitiesSlider').addEventListener('input', (e) => {
         this.state.liabilities = parseInt(e.target.value);
         document.getElementById('c3-liabilitiesValue').textContent = formatLakhsWithRupee(this.state.liabilities);
         updateSliderProgress(e.target);
-        this.update();
       });
-
-      this.update();
     }
   };
 
@@ -514,24 +439,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const c4 = {
     state: { age: 30, dependents: 2, liabilities: 2, income: 5, expenses: 10000, retireAge: 55 },
 
-    calculate() {
-      const workingYears = Math.max(this.state.retireAge - this.state.age, 1);
-      const dependentYears = this.state.dependents * 3;
-      const liabilityYears = Math.min(Math.ceil(this.state.liabilities / 5) * 2, 15);
-      const annualIncome = this.state.income * 100000;
-      const annualExpenses = this.state.expenses * 12;
-      const expenseRatio = annualExpenses / Math.max(annualIncome, 1);
-      const extraYears = expenseRatio > 0.6 ? 5 : expenseRatio > 0.4 ? 3 : 0;
-
-      const recommended = Math.max(workingYears, dependentYears, liabilityYears) + extraYears;
-      const capped = Math.min(Math.max(recommended, 5), 50);
-      return { years: capped, retireAge: this.state.retireAge };
-    },
-
-    update() {
-      const r = this.calculate();
-      animateAmount(document.getElementById('c4-yearsAmount'), r.years + ' years');
-      if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
+    getParams() {
+      return { ...this.state };
     },
 
     init() {
@@ -539,46 +448,37 @@ document.addEventListener('DOMContentLoaded', () => {
         this.state.age = parseInt(e.target.value);
         document.getElementById('c4-ageValue').textContent = this.state.age;
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c4-dependentsSlider').addEventListener('input', (e) => {
         this.state.dependents = parseInt(e.target.value);
         document.getElementById('c4-dependentsValue').textContent = this.state.dependents;
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c4-liabilitiesSlider').addEventListener('input', (e) => {
         this.state.liabilities = parseInt(e.target.value);
         document.getElementById('c4-liabilitiesValue').textContent = formatLakhsWithRupee(this.state.liabilities);
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c4-incomeSlider').addEventListener('input', (e) => {
         this.state.income = parseInt(e.target.value);
         document.getElementById('c4-incomeValue').textContent = formatLakhsWithRupee(this.state.income);
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c4-expensesSlider').addEventListener('input', (e) => {
         this.state.expenses = parseInt(e.target.value);
         document.getElementById('c4-expensesValue').textContent = '₹' + this.state.expenses.toLocaleString('en-IN');
         updateSliderProgress(e.target);
-        this.update();
       });
-
 
       document.getElementById('c4-retireSlider').addEventListener('input', (e) => {
         this.state.retireAge = parseInt(e.target.value);
         document.getElementById('c4-retireValue').textContent = this.state.retireAge + ' yrs';
         updateSliderProgress(e.target);
-        this.update();
       });
-
-      this.update();
     }
   };
 
@@ -589,34 +489,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const c5 = {
     state: { age: 30, income: 10, expenses: 4, retireAge: 60 },
 
-    calculate() {
-      const yearsLeft = Math.max(this.state.retireAge - this.state.age, 1);
-      // Net annual contribution = income - expenses (what family depends on)
-      const netAnnual = Math.max(this.state.income - this.state.expenses, 0) * 100000;
-      // HLV: present value of future net contributions discounted at 6% inflation
-      // PV = netAnnual × [(1 - (1+r)^-n) / r], r = 0.06
-      const r = 0.06;
-      const pv = netAnnual * ((1 - Math.pow(1 + r, -yearsLeft)) / r);
-      const hlv = Math.round(pv / 100000) * 100000;
-
-      return {
-        hlv: Math.max(hlv, 500000),
-        yearsLeft,
-        netAnnual
-      };
-    },
-
-    formatHLV(val) {
-      if (val >= 10000000) return '₹' + (val / 10000000).toFixed(1) + 'Cr';
-      if (val >= 100000)   return '₹' + (val / 100000).toFixed(1) + 'L';
-      return '₹' + val.toLocaleString('en-IN');
-    },
-
-    update() {
-      const r = this.calculate();
-      const hlvFormatted = '₹ ' + r.hlv.toLocaleString('en-IN');
-      animateAmount(document.getElementById('c5-hlvAmount'), hlvFormatted);
-      if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
+    getParams() {
+      return { ...this.state };
     },
 
     init() {
@@ -624,31 +498,25 @@ document.addEventListener('DOMContentLoaded', () => {
         this.state.age = parseInt(e.target.value);
         document.getElementById('c5-ageValue').textContent = this.state.age;
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c5-incomeSlider').addEventListener('input', (e) => {
         this.state.income = parseInt(e.target.value);
         document.getElementById('c5-incomeValue').textContent = formatLakhsWithRupee(this.state.income);
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c5-expensesSlider').addEventListener('input', (e) => {
         this.state.expenses = parseInt(e.target.value);
         document.getElementById('c5-expensesValue').textContent = formatLakhsWithRupee(this.state.expenses);
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c5-retireSlider').addEventListener('input', (e) => {
         this.state.retireAge = parseInt(e.target.value);
         document.getElementById('c5-retireValue').textContent = this.state.retireAge + ' yrs';
         updateSliderProgress(e.target);
-        this.update();
       });
-
-      this.update();
     }
   };
 
@@ -658,61 +526,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const c6 = {
     coverSteps: [2500000, 5000000, 7500000, 10000000, 20000000],
-    coverLabels: ['₹25L', '₹50L', '₹75L', '₹1Cr', '₹2Cr'],
+    coverLabels: ['₹25 L', '₹50 L', '₹75 L', '₹1 Cr', '₹2 Cr'],
 
     state: { age: 30, coverIndex: 1, term: 20, income: 10 },
 
-    calculate() {
-      const cover = this.coverSteps[this.state.coverIndex];
-      const basePer1L = 28;
-      const coverInLakhs = cover / 100000;
-      const ageMul = this.getTermAgeFactor(this.state.age);
-      const termMul = this.getTermFactor(this.state.term);
-
-      const baseAnnual = coverInLakhs * basePer1L;
-      const ageComp = Math.round((baseAnnual * (ageMul - 1)) / 100) * 100;
-      const coverComp = Math.round((baseAnnual * 0.15 * (coverInLakhs / 50 - 1)) / 100) * 100;
-      const termComp = Math.round((baseAnnual * (termMul - 1)) / 100) * 100;
-
-      const total = Math.max(Math.round((baseAnnual + ageComp + coverComp + termComp) / 100) * 100, 3000);
-      const affordability = ((total / (this.state.income * 100000)) * 100).toFixed(1);
-
-      return { total, ageComp, coverComp, termComp, affordability };
-    },
-
-    getTermAgeFactor(age) {
-      if (age <= 25) return 0.7;
-      if (age <= 30) return 0.7 + (age - 25) * 0.06;
-      if (age <= 35) return 1.0 + (age - 30) * 0.08;
-      if (age <= 40) return 1.4 + (age - 35) * 0.12;
-      if (age <= 50) return 2.0 + (age - 40) * 0.2;
-      return 4.0 + (age - 50) * 0.35;
-    },
-
-    getTermFactor(term) {
-      if (term <= 10) return 0.75;
-      if (term <= 20) return 0.75 + (term - 10) * 0.025;
-      if (term <= 30) return 1.0 + (term - 20) * 0.04;
-      return 1.4 + (term - 30) * 0.06;
-    },
-
-    calculateForAge(age) {
-      const savedAge = this.state.age;
-      this.state.age = age;
-      const result = this.calculate();
-      this.state.age = savedAge;
-      return result.total;
-    },
-
-    update() {
-      const r = this.calculate();
-      animateAmount(document.getElementById('c6-premiumAmount'), formatINR(r.total));
-      const daily = Math.ceil(r.total / 365);
-      const plansEl = document.getElementById('c6-plansText');
-      if (plansEl) plansEl.textContent = '₹1 Cr life cover';
-      const perdayEl = document.getElementById('c6-perDay');
-      if (perdayEl) perdayEl.textContent = 'That\'s just ₹' + daily + '/day — less than a coffee';
-      if (typeof updateBuyCtaUrls === 'function') updateBuyCtaUrls();
+    getParams() {
+      return { ...this.state };
     },
 
     init() {
@@ -720,58 +539,32 @@ document.addEventListener('DOMContentLoaded', () => {
         this.state.age = parseInt(e.target.value);
         document.getElementById('c6-ageValue').textContent = this.state.age;
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c6-coverSlider').addEventListener('input', (e) => {
         this.state.coverIndex = parseInt(e.target.value);
         document.getElementById('c6-coverValue').textContent = this.coverLabels[this.state.coverIndex];
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c6-termSlider').addEventListener('input', (e) => {
         this.state.term = parseInt(e.target.value);
         document.getElementById('c6-termValue').textContent = this.state.term + ' yrs';
         updateSliderProgress(e.target);
-        this.update();
       });
 
       document.getElementById('c6-incomeSlider').addEventListener('input', (e) => {
         this.state.income = parseInt(e.target.value);
         document.getElementById('c6-incomeValue').textContent = formatLakhsWithRupee(this.state.income);
         updateSliderProgress(e.target);
-        this.update();
       });
-
-      this.update();
     }
   };
 
   // =============================================
-  // Global: Toggle Buttons (single-select per group per calculator)
+  // Global: Multi-select toggle buttons (Calc 3 goals)
   // =============================================
 
-  document.querySelectorAll('.toggle-btn:not(.multi-btn)').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const calc = btn.dataset.calc;
-      const group = btn.dataset.group;
-      const value = btn.dataset.value;
-
-      document.querySelectorAll(`.toggle-btn[data-calc="${calc}"][data-group="${group}"]`).forEach((b) => {
-        b.classList.remove('active');
-      });
-      btn.classList.add('active');
-
-      const calcObj = { c1, c2, c3, c4, c5, c6 }[calc];
-      if (calcObj) {
-        calcObj.state[group] = value;
-        calcObj.update();
-      }
-    });
-  });
-
-  // Multi-select toggle buttons (for future goals in Calc 3)
   document.querySelectorAll('.multi-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       btn.classList.toggle('active');
@@ -784,32 +577,30 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const calcObj = { c1, c2, c3, c4, c5, c6 }[calc];
-      if (calcObj) {
-        calcObj.state[group] = selected;
-        calcObj.update();
-      }
+      if (calcObj) calcObj.state[group] = selected;
     });
   });
 
   // =============================================
-  // Global: CTA Buttons
+  // Global: CTA Buttons — trigger API fetch
   // =============================================
 
   document.querySelectorAll('.cta-button').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const calc = btn.dataset.calc;
-      const calcObj = { c1, c2, c3, c4, c5, c6 }[calc];
-      if (calcObj) calcObj.update();
-
-      btn.style.transform = 'scale(0.98)';
-      setTimeout(() => { btn.style.transform = ''; }, 150);
-
-      if (window.innerWidth <= 900) {
-        const section = btn.closest('.calculator-section');
-        const panel = section.querySelector('.results-panel');
-        panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      const calcId = btn.dataset.calc;
+      triggerFetch(calcId);
     });
+  });
+
+  // =============================================
+  // Global: Retry Buttons
+  // =============================================
+
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('calc-retry-btn')) {
+      const calcId = e.target.dataset.calc;
+      triggerFetch(calcId);
+    }
   });
 
   // =============================================
@@ -859,26 +650,26 @@ document.addEventListener('DOMContentLoaded', () => {
     params.set('age', calcObj.state.age);
 
     if (calcId === 'c1') {
-      params.set('cover', c1.coverSteps[c1.state.coverIndex] + '');
-      params.set('adults', c1.state.adults);
+      const coverSteps = [1000000, 2500000, 5000000, 10000000];
+      params.set('cover',    coverSteps[c1.state.coverIndex] + '');
+      params.set('adults',   c1.state.adults);
       params.set('children', c1.state.children);
-      params.set('city', c1.state.city);
+      params.set('city',     c1.state.city);
     } else if (calcId === 'c2') {
       params.set('income', c2.state.income);
       params.set('family', c2.state.family);
-      params.set('city', c2.state.city);
+      params.set('city',   c2.state.city);
     } else if (calcId === 'c3') {
-      params.set('income', c3.state.income);
+      params.set('income',     c3.state.income);
       params.set('dependents', c3.state.dependents);
     } else if (calcId === 'c4') {
-      params.set('term', c4.calculate().years);
       params.set('retire_age', c4.state.retireAge);
     } else if (calcId === 'c5') {
-      params.set('hlv', c5.calculate().hlv);
       params.set('income', c5.state.income);
     } else if (calcId === 'c6') {
-      params.set('cover', c6.coverSteps[c6.state.coverIndex] + '');
-      params.set('term', c6.state.term);
+      const coverSteps = [2500000, 5000000, 7500000, 10000000, 20000000];
+      params.set('cover',  coverSteps[c6.state.coverIndex] + '');
+      params.set('term',   c6.state.term);
       params.set('income', c6.state.income);
     }
 
@@ -904,4 +695,5 @@ document.addEventListener('DOMContentLoaded', () => {
   c4.init();
   c5.init();
   c6.init();
+  updateBuyCtaUrls();
 });

@@ -1452,6 +1452,23 @@ body {
   flex-shrink: 0;
 }
 
+/* ── Stale result state ── */
+
+.result-stale {
+  opacity: 0.38;
+  transition: opacity 0.2s ease;
+}
+
+@keyframes cta-nudge-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(89, 32, 197, 0.55); }
+  50%  { box-shadow: 0 0 0 10px rgba(89, 32, 197, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(89, 32, 197, 0); }
+}
+
+.cta-button.cta-nudge {
+  animation: cta-nudge-pulse 0.7s ease-out 2;
+}
+
 /* ── Disclaimer ── */
 
 .calc-disclaimer {

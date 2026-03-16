@@ -174,6 +174,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function markStale(calcId) {
+    const resultEl = document.getElementById(calcId + '-result');
+    const plansEl  = document.getElementById(calcId + '-plans');
+    const shieldEl = document.getElementById(calcId + '-shield');
+    const btn      = document.querySelector('.cta-button[data-calc="' + calcId + '"]');
+
+    // Only act if a result is currently visible
+    if (!resultEl || resultEl.hidden) return;
+
+    if (resultEl) resultEl.classList.add('result-stale');
+    if (plansEl)  plansEl.classList.add('result-stale');
+    if (shieldEl) shieldEl.classList.add('result-stale');
+    if (btn) {
+      btn.classList.remove('cta-nudge');
+      void btn.offsetWidth; // force reflow to restart animation
+      btn.classList.add('cta-nudge');
+    }
+  }
+
+  function clearStale(calcId) {
+    const resultEl = document.getElementById(calcId + '-result');
+    const plansEl  = document.getElementById(calcId + '-plans');
+    const shieldEl = document.getElementById(calcId + '-shield');
+    const btn      = document.querySelector('.cta-button[data-calc="' + calcId + '"]');
+    if (resultEl) resultEl.classList.remove('result-stale');
+    if (plansEl)  plansEl.classList.remove('result-stale');
+    if (shieldEl) shieldEl.classList.remove('result-stale');
+    if (btn)      btn.classList.remove('cta-nudge');
+  }
+
   function showResult(calcId, result) {
     const resultEl  = document.getElementById(calcId + '-result');
     const emptyEl   = document.getElementById(calcId + '-empty');
@@ -183,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (shieldEl) shieldEl.hidden = false;
     if (resultEl) resultEl.hidden = false;
     if (plansEl)  plansEl.hidden  = false;
+    clearStale(calcId);
     renderResult(calcId, result);
   }
 
@@ -271,6 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
           el.textContent = this.state[stateKey];
           el.dataset.zero = this.state[stateKey] === 0 ? 'true' : 'false';
           this.updateStepperButtons();
+          markStale('c1');
         }
       });
       document.getElementById(incId).addEventListener('click', () => {
@@ -280,6 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
           el.textContent = this.state[stateKey];
           el.dataset.zero = this.state[stateKey] === 0 ? 'true' : 'false';
           this.updateStepperButtons();
+          markStale('c1');
         }
       });
     },
@@ -289,16 +322,19 @@ document.addEventListener('DOMContentLoaded', () => {
         this.state.age = parseInt(e.target.value);
         document.getElementById('c1-ageValue').textContent = this.state.age;
         updateSliderProgress(e.target);
+        markStale('c1');
       });
 
       document.getElementById('c1-coverSlider').addEventListener('input', (e) => {
         this.state.coverIndex = parseInt(e.target.value);
         document.getElementById('c1-coverValue').textContent = this.coverLabels[this.state.coverIndex];
         updateSliderProgress(e.target);
+        markStale('c1');
       });
 
       document.getElementById('c1-citySelect').addEventListener('change', (e) => {
         this.state.city = e.detail.value;
+        markStale('c1');
       });
 
       this.initStepper('c1-adults-dec', 'c1-adults-inc', 'c1-adults-val', 'adults', 1, 4);
@@ -324,24 +360,28 @@ document.addEventListener('DOMContentLoaded', () => {
         this.state.age = parseInt(e.target.value);
         document.getElementById('c5-ageValue').textContent = this.state.age;
         updateSliderProgress(e.target);
+        markStale('c5');
       });
 
       document.getElementById('c5-incomeSlider').addEventListener('input', (e) => {
         this.state.income = parseInt(e.target.value);
         document.getElementById('c5-incomeValue').textContent = formatLakhsWithRupee(this.state.income);
         updateSliderProgress(e.target);
+        markStale('c5');
       });
 
       document.getElementById('c5-expensesSlider').addEventListener('input', (e) => {
         this.state.expenses = parseInt(e.target.value);
         document.getElementById('c5-expensesValue').textContent = formatLakhsWithRupee(this.state.expenses);
         updateSliderProgress(e.target);
+        markStale('c5');
       });
 
       document.getElementById('c5-retireSlider').addEventListener('input', (e) => {
         this.state.retireAge = parseInt(e.target.value);
         document.getElementById('c5-retireValue').textContent = this.state.retireAge + ' yrs';
         updateSliderProgress(e.target);
+        markStale('c5');
       });
     }
   };
@@ -365,24 +405,28 @@ document.addEventListener('DOMContentLoaded', () => {
         this.state.age = parseInt(e.target.value);
         document.getElementById('c6-ageValue').textContent = this.state.age;
         updateSliderProgress(e.target);
+        markStale('c6');
       });
 
       document.getElementById('c6-coverSlider').addEventListener('input', (e) => {
         this.state.coverIndex = parseInt(e.target.value);
         document.getElementById('c6-coverValue').textContent = this.coverLabels[this.state.coverIndex];
         updateSliderProgress(e.target);
+        markStale('c6');
       });
 
       document.getElementById('c6-termSlider').addEventListener('input', (e) => {
         this.state.term = parseInt(e.target.value);
         document.getElementById('c6-termValue').textContent = this.state.term + ' yrs';
         updateSliderProgress(e.target);
+        markStale('c6');
       });
 
       document.getElementById('c6-incomeSlider').addEventListener('input', (e) => {
         this.state.income = parseInt(e.target.value);
         document.getElementById('c6-incomeValue').textContent = formatLakhsWithRupee(this.state.income);
         updateSliderProgress(e.target);
+        markStale('c6');
       });
     }
   };

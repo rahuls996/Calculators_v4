@@ -193,10 +193,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (resultEl) resultEl.classList.add('result-stale');
     if (plansEl)  plansEl.classList.add('result-stale');
     if (shieldEl) shieldEl.classList.add('result-stale');
-    if (btn) {
-      btn.classList.remove('cta-nudge');
-      void btn.offsetWidth; // force reflow to restart animation
-      btn.classList.add('cta-nudge');
+    if (btn && !btn.classList.contains('cta-stale')) {
+      btn.dataset.originalText = btn.dataset.originalText || btn.textContent.trim();
+      btn.innerHTML = '<span class="cta-refresh-icon">↻</span> Update my price';
+      btn.classList.add('cta-stale');
     }
   }
 
@@ -208,7 +208,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (resultEl) resultEl.classList.remove('result-stale');
     if (plansEl)  plansEl.classList.remove('result-stale');
     if (shieldEl) shieldEl.classList.remove('result-stale');
-    if (btn)      btn.classList.remove('cta-nudge');
+    if (btn && btn.classList.contains('cta-stale')) {
+      btn.classList.remove('cta-stale');
+      if (btn.dataset.originalText) btn.textContent = btn.dataset.originalText;
+    }
   }
 
   function showResult(calcId, result) {

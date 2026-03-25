@@ -1482,6 +1482,28 @@ body {
   transform: translateY(-1px);
 }
 
+/* Health calc — primary CTA switches to "View plans" after guide result */
+.cta-button.cta-view-plans {
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-dark);
+}
+
+.cta-button.cta-view-plans:hover {
+  background: var(--purple-700);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(89, 32, 197, 0.35);
+}
+
+.cta-button.cta-view-plans:active {
+  transform: translateY(0);
+}
+
+/* Guide line pricing (not a computed premium) */
+.premium-amount--guide {
+  font-size: clamp(28px, 4vw, 36px);
+  line-height: 1.2;
+}
+
 .cta-refresh-icon {
   display: inline-block;
   animation: cta-refresh-spin 0.5s ease-out;

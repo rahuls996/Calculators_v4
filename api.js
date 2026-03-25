@@ -6,49 +6,13 @@
  * a real fetch() call using the same params shape.
  *
  * Usage:
- *   const result = await fetchPrice('c1', { age: 30, coverIndex: 0, ... });
- *   // result: { price: 13700, monthly: 1142, daily: 38, coverText: '₹1 Cr life cover' }
+ *   const result = await fetchPrice('c5', { age: 30, income: 10, ... });
+ * Health premium (c1) uses an on-page guide only — it does not call this API.
  */
-
-// ─── Shared formula helpers (mirrors script.js) ─────────────────────────────
-
-const cityRiskMap = {
-  mumbai: 1.4, delhi: 1.35, bengaluru: 1.2, chennai: 1.15,
-  hyderabad: 1.1, kolkata: 1.1, pune: 1.15, ahmedabad: 1.05,
-  jaipur: 1.0, other: 0.9
-};
-
-function getAgeMultiplier(age) {
-  if (age <= 25) return 0.6;
-  if (age <= 35) return 0.8 + (age - 25) * 0.04;
-  if (age <= 45) return 1.2 + (age - 35) * 0.08;
-  if (age <= 55) return 2.0 + (age - 45) * 0.15;
-  if (age <= 65) return 3.5 + (age - 55) * 0.25;
-  return 6.0 + (age - 65) * 0.35;
-}
 
 function r100(n) { return Math.round(n / 100) * 100; }
 
 // ─── Local formula implementations ──────────────────────────────────────────
-
-const C1_COVER_STEPS = [10, 25, 50, 100];
-
-function calcC1(p) {
-  const base = 5000;
-  const ageComp   = r100(base * getAgeMultiplier(p.age) - base);
-  const cityMul   = cityRiskMap[p.city] || 1.0;
-  const cityComp  = r100(base * (cityMul - 1) * 2);
-  const cover     = C1_COVER_STEPS[p.coverIndex];
-  const coverComp = r100(base * (cover / 10 - 1) * 0.3);
-  const memberComp = r100((p.adults - 1) * 1500 + p.children * 600 + p.parents * 2800);
-  const total = Math.max(base + ageComp + cityComp + coverComp + memberComp, 2000);
-  const monthly = Math.ceil(total / 12);
-  const daily   = Math.ceil(total / 365);
-  return { price: total, monthly, daily, coverText: 'Starting at ₹' + monthly.toLocaleString('en-IN') + '/month' };
-}
-
-
-
 
 function calcC5(p) {
   const yearsLeft = Math.max(p.retireAge - p.age, 1);
@@ -96,7 +60,7 @@ function calcC6(p) {
 
 // ─── Formula dispatch map ────────────────────────────────────────────────────
 
-const formulaMap = { c1: calcC1, c5: calcC5, c6: calcC6 };
+const formulaMap = { c5: calcC5, c6: calcC6 };
 
 // ─── Mock network call ───────────────────────────────────────────────────────
 

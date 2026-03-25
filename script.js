@@ -193,6 +193,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (resultEl) resultEl.classList.add('result-stale');
     if (plansEl)  plansEl.classList.add('result-stale');
     if (shieldEl) shieldEl.classList.add('result-stale');
+    if (btn && calcId === 'c1') {
+      btn.classList.remove('cta-view-plans');
+      btn.dataset.ctaMode = 'calc';
+    }
     if (btn && !btn.classList.contains('cta-stale')) {
       btn.dataset.originalText = btn.dataset.originalText || btn.textContent.trim();
       btn.innerHTML = '<span class="cta-refresh-icon">↻</span> Update my price';
@@ -210,8 +214,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (shieldEl) shieldEl.classList.remove('result-stale');
     if (btn && btn.classList.contains('cta-stale')) {
       btn.classList.remove('cta-stale');
-      if (btn.dataset.originalText) btn.textContent = btn.dataset.originalText;
+      if (calcId !== 'c1' && btn.dataset.originalText) btn.textContent = btn.dataset.originalText;
     }
+  }
+
+  const C1_GUIDE_HEADLINE = 'Starting from ₹200/month';
+  const C1_GUIDE_SUBTITLE = 'Premiums vary by plan — your exact quote is on the next step.';
+  const C1_CTA_VIEW_LABEL = 'View plans →';
+
+  function getHealthCtaButton() {
+    return document.querySelector('.cta-button[data-calc="c1"]');
+  }
+
+  function setHealthCtaViewMode() {
+    const btn = getHealthCtaButton();
+    if (!btn) return;
+    btn.textContent = C1_CTA_VIEW_LABEL;
+    btn.dataset.ctaMode = 'view';
+    btn.classList.add('cta-view-plans');
+    btn.classList.remove('cta-stale');
   }
 
   function showResult(calcId, result) {
@@ -227,15 +248,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (plansEl)  plansEl.hidden  = false;
     clearStale(calcId);
     renderResult(calcId, result);
+    if (calcId === 'c1') setHealthCtaViewMode();
   }
 
   function renderResult(calcId, result) {
     if (calcId === 'c1') {
-      animateAmount(document.getElementById('c1-premiumAmount'), formatINR(result.price));
-      const plansEl = document.getElementById('c1-plansText');
-      if (plansEl) plansEl.textContent = result.coverText;
-      const perdayEl = document.getElementById('c1-perDay');
-      if (perdayEl) perdayEl.textContent = result.daily ? '₹' + result.daily + '/day. Less than your morning chai.' : '';
+      const main = document.getElementById('c1-premiumAmount');
+      if (main) {
+        main.textContent = C1_GUIDE_HEADLINE;
+        main.dataset.currentText = C1_GUIDE_HEADLINE;
+      }
+      const sub = document.getElementById('c1-resultSubtitle');
+      if (sub) sub.textContent = C1_GUIDE_SUBTITLE;
     } else if (calcId === 'c5') {
       animateAmount(document.getElementById('c5-hlvAmount'), '₹ ' + result.price.toLocaleString('en-IN'));
     } else if (calcId === 'c6') {
@@ -255,6 +279,25 @@ document.addEventListener('DOMContentLoaded', () => {
   async function triggerFetch(calcId) {
     const calcObj = { c1, c5, c6 }[calcId];
     if (!calcObj) return;
+
+    /* Health premium: guide-only result, no pricing API */
+    if (calcId === 'c1') {
+      setLoadingState(calcId, true);
+      try {
+        await new Promise(r => setTimeout(r, 650));
+        setLoadingState(calcId, false);
+        showResult(calcId, {});
+      } catch (err) {
+        setLoadingState(calcId, false);
+      }
+      if (window.innerWidth <= 900) {
+        const section = document.querySelector('.cta-button[data-calc="' + calcId + '"]')
+          ?.closest('.calculator-section');
+        const panel = section?.querySelector('.results-panel');
+        if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return;
+    }
 
     const params = calcObj.getParams();
     setLoadingState(calcId, true);
@@ -468,8 +511,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // =============================================
 
   document.querySelectorAll('.cta-button').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
       const calcId = btn.dataset.calc;
+      if (calcId === 'c1' && btn.dataset.ctaMode === 'view') {
+        e.preventDefault();
+        window.open(buildPlansUrl('c1'), '_blank', 'noopener');
+        return;
+      }
       triggerFetch(calcId);
     });
   });
@@ -536,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateBuyCtaUrls() {
-    ['c1', 'c5', 'c6'].forEach(id => {
+    ['c5', 'c6'].forEach(id => {
       const el = document.getElementById(id + '-plansBtn');
       if (el) el.href = buildPlansUrl(id);
     });

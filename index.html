@@ -35,9 +35,9 @@
   <!-- ========== CALCULATOR 1: Health Insurance Calculator ========== -->
   <section class="calculator-section active" id="calc1">
     <div class="calculator-wrapper">
-      <div class="calculator-container">
-        <div class="input-panel">
-          <h1 class="calculator-title">What does your health<br>cover cost?</h1>
+      <div class="calculator-container calculator-container--health-figma">
+        <div class="input-panel input-panel--health-figma">
+          <h1 class="calculator-title calculator-title--health-figma">What does your health<br>cover cost?</h1>
 
           <div class="slider-group">
             <div class="slider-header">
@@ -128,10 +128,11 @@
             </div>
           </div>
 
+          <button type="button" class="cta-button cta-button--health-figma" data-calc="c1" data-cta-mode="calc">Calculate my premium</button>
         </div>
 
-        <div class="results-panel">
-          <div class="results-content">
+        <div class="results-panel results-panel--health-figma">
+          <div class="results-content results-content--health-figma">
             <div class="shield-icon" id="c1-shield" hidden>
               <img src="Porting.svg" alt="Insurance shield" width="182" height="182">
             </div>
@@ -140,18 +141,22 @@
                 <img src="Porting.svg" alt="" width="120" height="120">
               </div>
               <p class="calc-empty-title">See your price instantly</p>
-              <p class="calc-empty-subtitle">Adjust the sliders on the left, then hit <strong>Calculate my premium</strong> to get your personalised quote.</p>
+              <p class="calc-empty-subtitle">Fill in your details, then tap <strong>Calculate my premium</strong> to see a guide price.</p>
             </div>
-            <div class="premium-display" id="c1-result" hidden>
-              <p class="premium-amount premium-amount--guide" id="c1-premiumAmount">Starting from ₹200/month</p>
-              <p class="premium-subtitle" id="c1-resultSubtitle">Premiums vary by plan — your exact quote is on the next step.</p>
+            <div class="premium-display premium-display--health-figma" id="c1-result" hidden>
+              <div class="premium-figma-art">
+                <img src="Porting.svg" alt="" width="149" height="149">
+              </div>
+              <div class="premium-figma-stack">
+                <p class="premium-figma-from">Starting from</p>
+                <p class="premium-figma-amount" id="c1-premiumAmount">₹200/month</p>
+                <p class="premium-figma-pill" id="c1-resultPill">Less than your morning chai — view plans for your exact amount.</p>
+              </div>
             </div>
             <div class="price-skeleton" id="c1-skeleton" hidden></div>
           </div>
-          <p class="calc-disclaimer">This calculator serves as a guide. Results are based on the information provided and must not alone be taken as the basis for a financial decision.</p>
+          <p class="calc-disclaimer calc-disclaimer--health-figma">This calculator serves as a guide. Results are based on the information provided and must not alone be taken as the basis for a financial decision.</p>
         </div>
-
-        <button type="button" class="cta-button" data-calc="c1" data-cta-mode="calc">Calculate my premium</button>
       </div>
     </div>
   </section>

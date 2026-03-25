@@ -96,7 +96,7 @@ async function callPricingApi(calcId, params) {
 
 /**
  * Fetch price for a given calculator with its current params.
- * @param {string} calcId  - 'c1' through 'c6'
+ * @param {string} calcId  - 'c5' or 'c6' (health premium c1 is handled in script.js)
  * @param {object} params  - input values collected from calculator state
  * @returns {Promise<{price, monthly, daily, coverText, isYears?, isHLV?}>}
  */

@@ -224,6 +224,184 @@ body {
 }
 
 /* ==========================================
+   Health calculator — Figma SEO widget card
+   (https://www.figma.com/design/3hhN2o1Y6kzWdFcg9r80wb — node 3258:11713)
+   ========================================== */
+
+.calculator-container--health-figma {
+  grid-template-columns: 1fr minmax(300px, 1fr);
+  grid-template-rows: auto;
+  gap: 24px;
+  padding: 24px;
+  background: #fafafa;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.02);
+}
+
+.calculator-container--health-figma .input-panel {
+  grid-row: 1;
+}
+
+.calculator-container--health-figma .results-panel {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: stretch;
+}
+
+.calculator-container--health-figma .cta-button {
+  grid-column: auto;
+  grid-row: auto;
+}
+
+.calculator-title--health-figma {
+  font-size: 30px;
+  line-height: 36px;
+  letter-spacing: 0;
+  margin-bottom: 0;
+}
+
+.input-panel--health-figma .cta-button--health-figma {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.cta-button--health-figma {
+  height: 60px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  background: #141414;
+}
+
+.cta-button--health-figma:hover {
+  background: #2a2a2a;
+}
+
+.cta-button--health-figma.cta-view-plans {
+  background: #141414;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.cta-button--health-figma.cta-view-plans:hover {
+  background: #2a2a2a;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.results-panel--health-figma {
+  padding: 20px;
+  border-radius: 24px;
+  border: 1px solid #cccbcd;
+  background: linear-gradient(243deg, rgba(74, 222, 128, 0.16) 0%, rgba(255, 255, 255, 0.16) 58%);
+  box-shadow:
+    0 2px 20px rgba(0, 0, 0, 0.02),
+    inset 0 0 4px rgba(255, 255, 255, 0.88),
+    inset 0 -4px 16px rgba(0, 0, 0, 0.02),
+    inset 0 -4px 4px rgba(0, 0, 0, 0.02);
+}
+
+.results-content--health-figma {
+  flex: 1;
+  justify-content: center;
+  min-height: 220px;
+}
+
+.premium-display--health-figma {
+  gap: 0;
+  width: 100%;
+  max-width: 100%;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.premium-figma-art {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 17px;
+}
+
+.premium-figma-art img {
+  width: 149px;
+  height: 149px;
+  object-fit: contain;
+}
+
+.premium-figma-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.premium-figma-from {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  color: rgba(0, 0, 0, 0.56);
+}
+
+.premium-figma-amount {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 40px;
+  color: #4e29bb;
+  letter-spacing: -0.02em;
+}
+
+.premium-figma-pill {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 15px;
+  color: #5920c5;
+  background: linear-gradient(99deg, rgb(231, 231, 231) 0%, rgba(235, 210, 255, 0) 90%);
+  max-width: 100%;
+  text-align: center;
+}
+
+.calc-disclaimer--health-figma {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e1;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #7a7b7d;
+  text-align: center;
+}
+
+.input-panel--health-figma .searchable-select-trigger {
+  min-height: 60px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border-color: #cccbcd;
+}
+
+.input-panel--health-figma .searchable-select-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #474649;
+}
+
+.input-panel--health-figma .member-stepper {
+  min-height: 148px;
+  justify-content: space-between;
+  border-width: 1px;
+  border-color: #ebebeb;
+  border-radius: 16px;
+}
+
+/* ==========================================
    Left Panel — Inputs
    ========================================== */
 
@@ -1059,9 +1237,19 @@ body {
     margin-bottom: 0;
   }
 
+  .calculator-title--health-figma {
+    font-size: 28px;
+    line-height: 34px;
+  }
+
   .premium-amount {
     font-size: 40px;
     line-height: 48px;
+  }
+
+  .premium-figma-amount {
+    font-size: 32px;
+    line-height: 36px;
   }
 
   .slider-label {
@@ -1108,6 +1296,30 @@ body {
   .calculator-container {
     padding: var(--scale-20) var(--scale-16);
     gap: var(--scale-20);
+  }
+
+  .calculator-container--health-figma {
+    padding: var(--scale-20) var(--scale-16);
+    gap: var(--scale-20);
+  }
+
+  .calculator-title--health-figma {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .premium-figma-amount {
+    font-size: 28px;
+    line-height: 32px;
+  }
+
+  .premium-figma-art img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .calc-disclaimer--health-figma {
+    font-size: 10px;
   }
 
   /* Fields: comfortable gap so each group reads as a unit */

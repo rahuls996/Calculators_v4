@@ -218,9 +218,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const C1_GUIDE_HEADLINE = 'Starting from ₹200/month';
-  const C1_GUIDE_SUBTITLE = 'Premiums vary by plan — your exact quote is on the next step.';
-  const C1_CTA_VIEW_LABEL = 'View plans →';
+  const C1_GUIDE_AMOUNT = '₹200/month';
+  const C1_GUIDE_PILL = 'Less than your morning chai — view plans for your exact amount.';
+  const C1_CTA_VIEW_LABEL = 'View plans';
 
   function getHealthCtaButton() {
     return document.querySelector('.cta-button[data-calc="c1"]');
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const panel     = getResultsPanel(calcId);
     if (panel)    panel.classList.remove('results-empty');
     if (emptyEl)  emptyEl.hidden  = true;
-    if (shieldEl) shieldEl.hidden = false;
+    if (shieldEl) shieldEl.hidden = calcId === 'c1' ? true : false;
     if (resultEl) resultEl.hidden = false;
     if (plansEl)  plansEl.hidden  = false;
     clearStale(calcId);
@@ -255,11 +255,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (calcId === 'c1') {
       const main = document.getElementById('c1-premiumAmount');
       if (main) {
-        main.textContent = C1_GUIDE_HEADLINE;
-        main.dataset.currentText = C1_GUIDE_HEADLINE;
+        main.textContent = C1_GUIDE_AMOUNT;
+        main.dataset.currentText = C1_GUIDE_AMOUNT;
       }
-      const sub = document.getElementById('c1-resultSubtitle');
-      if (sub) sub.textContent = C1_GUIDE_SUBTITLE;
+      const pill = document.getElementById('c1-resultPill');
+      if (pill) pill.textContent = C1_GUIDE_PILL;
     } else if (calcId === 'c5') {
       animateAmount(document.getElementById('c5-hlvAmount'), '₹ ' + result.price.toLocaleString('en-IN'));
     } else if (calcId === 'c6') {
